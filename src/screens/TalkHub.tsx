@@ -4,7 +4,7 @@ import { CATEGORY_LABEL, PHRASES, REGION_BY_ID, type Category } from '@/content'
 import { CONVERSATIONS, LEVEL_LABEL, LEVEL_PASS, type TalkLevel } from '@/content/conversations';
 import { learnedPhraseIds } from '@/domain/lessonGenerator';
 import { useProgressStore } from '@/store/progressStore';
-import { isSttAvailable } from '@/audio/stt';
+import { probeStt } from '@/audio/stt';
 import { ensureVoicesLoaded } from '@/audio/tts';
 import { MicIcon } from '@/components/speak/SpeakCheck';
 import { Fuku } from '@/components/mascot/Fuku';
@@ -19,7 +19,7 @@ export function TalkHubScreen() {
   const pronounce = useProgressStore((s) => s.pronounce);
   const [stt, setStt] = useState(true);
   useEffect(() => {
-    void ensureVoicesLoaded().then(() => setStt(isSttAvailable()));
+    void ensureVoicesLoaded().then(() => probeStt()).then(setStt);
   }, []);
 
   const learned = useMemo(() => learnedPhraseIds(completedNodes), [completedNodes]);

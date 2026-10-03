@@ -3,8 +3,11 @@ import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 import { fileURLToPath, URL } from 'node:url';
 
+// VITE_BASE=/ for the Capacitor (APK) build; GitHub Pages serves from /kotodama/.
+const base = process.env.VITE_BASE ?? '/kotodama/';
+
 export default defineConfig({
-  base: '/kotodama/',
+  base,
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },
@@ -20,8 +23,8 @@ export default defineConfig({
         lang: 'es',
         display: 'standalone',
         orientation: 'portrait',
-        start_url: '/kotodama/',
-        scope: '/kotodama/',
+        start_url: base,
+        scope: base,
         theme_color: '#1D5C48',
         background_color: '#E9F0E6',
         icons: [

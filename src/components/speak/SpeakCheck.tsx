@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { isSttAvailable, listenOnce, stopListening, type SttError } from '@/audio/stt';
+import { isSttAvailable, listenOnce, probeStt, stopListening, type SttError } from '@/audio/stt';
 import { scoreSpeech, type SpeechScore } from '@/domain/pronunciation';
 import { JpText } from '@/components/ui/JpText';
 import { useSfx } from '@/audio/useSfx';
@@ -29,7 +29,10 @@ const ERR: Record<SttError, string> = {
  * Falls back to self-evaluation when speech recognition is unavailable (Firefox, offline).
  */
 export function SpeakCheck({ expected, onResult, hideExpected = false, autoStart = false }: Props) {
-  const stt = isSttAvailable();
+  const [stt, setStt] = useState(isSttAvailable());
+  useEffect(() => {
+    void probeStt().then(setStt);
+  }, []);
   const [state, setState] = useState<'idle' | 'listening' | 'done'>('idle');
   const [result, setResult] = useState<SpeechScore | null>(null);
   const [error, setError] = useState<string | null>(null);

@@ -1,5 +1,9 @@
-// Speech recognition wrapper (Web Speech API SpeechRecognition). Used to score pronunciation.
-// Availability: Chrome/Android (online, Google servers) and Safari/iOS 14.5+. Elsewhere → fallback.
+// Speech recognition wrapper used to score pronunciation.
+// Web: SpeechRecognition (Chrome/Android online, Safari/iOS 14.5+). Native APK: the Android
+// WebView has no web recognizer, so the Capacitor speech-recognition plugin is used instead.
+// Anywhere else → `isSttAvailable()` is false and the UI falls back to self-evaluation.
+
+import { Capacitor } from '@capacitor/core';
 
 type RecognitionCtor = new () => SpeechRecognitionLike;
 
@@ -22,7 +26,23 @@ function ctor(): RecognitionCtor | null {
   return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null;
 }
 
-export const isSttAvailable = () => ctor() !== null;
+const isNative = () => Capacitor.isNativePlatform();
+let nativeAvailable: boolean | null = null;
+
+export const isSttAvailable = () => (isNative() ? nativeAvailable !== false : ctor() !== null);
+
+/** Resolves native availability once (call early, e.g. on the Hablar tab). */
+export async function probeStt(): Promise<boolean> {
+  if (!isNative()) return ctor() !== null;
+  try {
+    const { SpeechRecognition } = await import('@capacitor-community/speech-recognition');
+    const r = await SpeechRecognition.available();
+    nativeAvailable = r.available;
+  } catch {
+    nativeAvailable = false;
+  }
+  return nativeAvailable;
+}
 
 export type SttError = 'not-allowed' | 'no-speech' | 'network' | 'aborted' | 'unavailable' | 'other';
 
@@ -36,10 +56,26 @@ let active: SpeechRecognitionLike | null = null;
 export function stopListening() {
   active?.abort();
   active = null;
+  if (isNative()) void import('@capacitor-community/speech-recognition').then(({ SpeechRecognition }) => SpeechRecognition.stop()).catch(() => undefined);
+}
+
+async function listenNative(): Promise<SttResult> {
+  try {
+    const { SpeechRecognition } = await import('@capacitor-community/speech-recognition');
+    const perm = await SpeechRecognition.requestPermissions();
+    if (perm.speechRecognition !== 'granted') return { alternatives: [], error: 'not-allowed' };
+    const r = await SpeechRecognition.start({ language: 'ja-JP', maxResults: 5, partialResults: false, popup: false });
+    const matches = r.matches ?? [];
+    return matches.length ? { alternatives: matches } : { alternatives: [], error: 'no-speech' };
+  } catch (e) {
+    const msg = String((e as Error)?.message ?? e).toLowerCase();
+    return { alternatives: [], error: msg.includes('permission') ? 'not-allowed' : msg.includes('network') ? 'network' : 'other' };
+  }
 }
 
 /** Listens once in Japanese and resolves with up to 5 alternatives (empty on error). */
 export function listenOnce(timeoutMs = 7000): Promise<SttResult> {
+  if (isNative()) return listenNative();
   const C = ctor();
   if (!C) return Promise.resolve({ alternatives: [], error: 'unavailable' });
   stopListening();
