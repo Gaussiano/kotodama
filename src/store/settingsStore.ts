@@ -18,6 +18,8 @@ export interface Settings {
   reducedMotion: boolean;
   exchangeRate: number; // JPY per 1 EUR
   onboarded: boolean;
+  /** The one-time «no Japanese voice» notice was dismissed. */
+  voiceNoticeDismissed: boolean;
 }
 
 interface SettingsStore extends Settings {
@@ -38,6 +40,7 @@ export const DEFAULT_SETTINGS: Settings = {
   reducedMotion: false,
   exchangeRate: 170,
   onboarded: false,
+  voiceNoticeDismissed: false,
 };
 
 export const useSettingsStore = create<SettingsStore>()(

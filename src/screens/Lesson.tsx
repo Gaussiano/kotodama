@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { NODE_BY_ID, REGION_BY_ID } from '@/content';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { NODE_BY_ID, PHRASE_BY_ID, REGION_BY_ID } from '@/content';
 import { generateLesson, retryExercise, type LessonPlan } from '@/domain/lessonGenerator';
 import type { Exercise } from '@/domain/exercises';
 import { mulberry32, seedFromString } from '@/domain/rng';
@@ -26,6 +26,8 @@ interface ItemResult {
 
 export function LessonScreen() {
   const { nodeId = '' } = useParams();
+  const [searchParams] = useSearchParams();
+  const skipExam = searchParams.get('skip') === '1';
   const navigate = useNavigate();
   const node = NODE_BY_ID[nodeId];
 
@@ -107,11 +109,28 @@ export function LessonScreen() {
         regionId: node.regionId,
         usedHint: hintUsed,
       });
+      if (skipExam && passed && kind === 'boss') progress.markRegionComplete(node.regionId);
       const failedItems = Object.entries(results.current).filter(([, r]) => r.failed).map(([id]) => id);
-      setSummary({ node, xp, accuracy, durationSec, perfect, passed, passThreshold: plan.passThreshold, streakExtended: res.streakExtended, usedFreeze: res.usedFreeze, failedItems, exercisesDone: finalQueue.length });
+      const lastPhrase = [...plan.newItemIds].reverse().map((id) => PHRASE_BY_ID[id]).find(Boolean);
+      setSummary({
+        node,
+        xp,
+        accuracy,
+        durationSec,
+        perfect,
+        passed,
+        passThreshold: plan.passThreshold,
+        streakExtended: res.streakExtended,
+        usedFreeze: res.usedFreeze,
+        failedItems,
+        exercisesDone: finalQueue.length,
+        newAchievements: res.newAchievements,
+        circleKana: lastPhrase?.kana ?? '言霊',
+        skipExam,
+      });
       setStatus('done');
     },
-    [plan, node, progress, hintUsed],
+    [plan, node, progress, hintUsed, skipExam],
   );
 
   const advance = useCallback(

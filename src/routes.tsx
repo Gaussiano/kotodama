@@ -1,5 +1,6 @@
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
 import { TabBar } from './components/ui/TabBar';
+import { TopBar } from './components/ui/TopBar';
 import { MapScreen } from './screens/Map';
 import { ReviewScreen } from './screens/Review';
 import { KanaDojoScreen } from './screens/KanaDojo';
@@ -14,6 +15,7 @@ import { useSettingsStore } from './store/settingsStore';
 function TabLayout() {
   return (
     <div className="flex min-h-dvh flex-col">
+      <TopBar />
       <div className="flex-1 pb-24">
         <Outlet />
       </div>

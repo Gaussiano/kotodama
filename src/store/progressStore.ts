@@ -5,6 +5,8 @@ import { localDayKey, type DayKey } from '@/domain/dates';
 import { createSrs, scheduleNext, type SrsState } from '@/domain/srs';
 import { gainHeart, loseHeart, MAX_HEARTS, regenHearts, type Hearts } from '@/domain/hearts';
 import { EMPTY_STREAK, updateStreak, type Streak } from '@/domain/streak';
+import { evaluateAchievements } from '@/domain/achievements';
+import { nodesOfRegion } from '@/content';
 
 export interface LessonOutcome {
   nodeId: string;
@@ -60,6 +62,10 @@ export interface ProgressStore extends Progress {
   importProgress: (p: Progress) => void;
   reset: () => void;
   unlockAchievement: (id: string, at?: string) => void;
+  /** «Saltar con un examen»: the guardian was passed directly, so the whole region counts as completed. */
+  markRegionComplete: (regionId: RegionId) => void;
+  /** Evaluates and stores any newly earned achievements; returns their ids. */
+  checkAchievements: (ctx?: { now?: Date; lesson?: LessonOutcome }) => string[];
 }
 
 export const EMPTY_PROGRESS: Progress = {
@@ -126,9 +132,27 @@ export const useProgressStore = create<ProgressStore>()(
           xpTotal: s.xpTotal + o.xp,
           xpByDay,
           reviewedCount,
-          lessonsCompleted: s.lessonsCompleted + (o.kind === 'lesson' || o.kind === 'boss' || o.kind === 'finalBoss' ? 1 : 0),
+          lessonsCompleted: s.lessonsCompleted + ((o.kind === 'lesson' || o.kind === 'boss' || o.kind === 'finalBoss') && o.passed ? 1 : 0),
         });
-        return { streakExtended: streakRes.extended, usedFreeze: streakRes.usedFreeze, newAchievements: [] };
+        const newAchievements = get().checkAchievements({ now, lesson: o });
+        return { streakExtended: streakRes.extended, usedFreeze: streakRes.usedFreeze, newAchievements };
+      },
+
+      markRegionComplete: (regionId) =>
+        set((s) => {
+          const ids = nodesOfRegion(regionId).map((n) => n.id);
+          return {
+            completedNodes: [...new Set([...s.completedNodes, ...ids])],
+            passedBosses: s.passedBosses.includes(regionId) ? s.passedBosses : [...s.passedBosses, regionId],
+          };
+        }),
+
+      checkAchievements: (ctx = {}) => {
+        const now = ctx.now ?? new Date();
+        const lesson = ctx.lesson ? { kind: ctx.lesson.kind, perfect: ctx.lesson.perfect, passed: ctx.lesson.passed } : undefined;
+        const ids = evaluateAchievements(progressSnapshot(get()), { now, lesson });
+        if (ids.length) set((s) => ({ achievements: { ...s.achievements, ...Object.fromEntries(ids.map((id) => [id, now.toISOString()])) } }));
+        return ids;
       },
 
       loseHeart: (now = new Date()) => set((s) => ({ hearts: loseHeart(s.hearts, now) })),

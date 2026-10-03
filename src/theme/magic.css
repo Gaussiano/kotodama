@@ -1,0 +1,58 @@
+/* Spell circle motion (spec §3.4). All of it collapses to a fade under reduced motion. */
+@keyframes spell-burst {
+  0% { opacity: 0; transform: scale(0.55); }
+  25% { opacity: 1; transform: scale(1.05); }
+  70% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.08); }
+}
+@keyframes spell-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes spell-leaf {
+  0% { opacity: 0; transform: rotate(var(--a)) translateY(0) scale(0.6); }
+  20% { opacity: 1; }
+  100% { opacity: 0; transform: rotate(var(--a)) translateY(-70px) scale(1); }
+}
+@keyframes spell-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes node-pulse {
+  0%, 100% { box-shadow: 0 0 0 4px rgb(var(--c-leaf-300) / 0.35), 0 0 18px rgb(var(--c-spell-glow) / 0.35); }
+  50% { box-shadow: 0 0 0 8px rgb(var(--c-leaf-300) / 0.2), 0 0 30px rgb(var(--c-spell-glow) / 0.65); }
+}
+@keyframes flower-bloom {
+  0% { opacity: 0; transform: scale(0) translateY(6px); }
+  70% { opacity: 1; transform: scale(1.15) translateY(-2px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes seal-pop {
+  0% { transform: scale(0.6) rotate(-12deg); opacity: 0; }
+  60% { transform: scale(1.08) rotate(3deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+
+.spell-burst { animation: spell-burst 900ms cubic-bezier(0.2, 0.8, 0.2, 1) both; transform-origin: center; }
+.spell-steady { animation: spell-fade 600ms ease-out both; }
+.spell-fade { animation: spell-fade 300ms ease-out both; }
+.spell-rotate { animation: spell-rotate 14s linear infinite; }
+.spell-leaf { animation: spell-leaf 850ms ease-out both; }
+.node-available { animation: node-pulse 2.4s ease-in-out infinite; }
+.flower { animation: flower-bloom 600ms cubic-bezier(0.2, 0.8, 0.2, 1) both; transform-origin: bottom center; }
+.seal-pop { animation: seal-pop 500ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .spell-burst, .spell-steady, .spell-rotate, .spell-leaf, .node-available, .flower, .seal-pop {
+    animation: spell-fade 200ms ease-out both;
+  }
+}
+:root[data-motion='reduced'] .spell-burst,
+:root[data-motion='reduced'] .spell-steady,
+:root[data-motion='reduced'] .spell-rotate,
+:root[data-motion='reduced'] .spell-leaf,
+:root[data-motion='reduced'] .node-available,
+:root[data-motion='reduced'] .flower,
+:root[data-motion='reduced'] .seal-pop {
+  animation: spell-fade 200ms ease-out both;
+}
