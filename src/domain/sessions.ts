@@ -1,18 +1,19 @@
 import { ALL_KANA, KANA_BY_ID, kanaInRows, type LessonNode } from '@/content';
 import { addDays, type DayKey } from './dates';
-import { generateKanaPractice, learnedKanaIds, reviewExerciseFor, itemKind, type GenOptions, type LessonPlan } from './lessonGenerator';
+import { generateKanaPractice, generateListening, learnedKanaIds, reviewExerciseFor, itemKind, type GenOptions, type LessonPlan } from './lessonGenerator';
 import { mulberry32 } from './rng';
 import { isDue, sortForReview, type SrsState } from './srs';
 import type { Exercise } from './exercises';
 
 // Virtual nodes: review sessions and kana practice that run through the same lesson runner.
 
-export type VirtualKind = 'review-due' | 'review-errors' | 'review-hearts' | 'kana-rows' | 'kana-weak';
+export type VirtualKind = 'review-due' | 'review-errors' | 'review-hearts' | 'kana-rows' | 'kana-weak' | 'listen';
 
 export interface VirtualSpec {
   kind: VirtualKind;
   script?: 'hiragana' | 'katakana';
   rows?: string[];
+  level?: 1 | 2 | 3;
 }
 
 export const HEARTS_SESSION_SIZE = 10;
@@ -24,6 +25,8 @@ export function parseVirtualId(id: string): VirtualSpec | null {
   if (id === 'review:errors') return { kind: 'review-errors' };
   if (id === 'review:hearts') return { kind: 'review-hearts' };
   if (id === 'kana:weak') return { kind: 'kana-weak' };
+  const l = id.match(/^listen:([123])$/);
+  if (l) return { kind: 'listen', level: Number(l[1]) as 1 | 2 | 3 };
   const m = id.match(/^kana:(h|k):([a-z,-]+)$/);
   if (m) return { kind: 'kana-rows', script: m[1] === 'h' ? 'hiragana' : 'katakana', rows: m[2]!.split(',') };
   return null;
@@ -42,6 +45,8 @@ export function virtualNode(id: string, spec: VirtualSpec): LessonNode {
       return { ...base, title: `Práctica de ${spec.script === 'hiragana' ? 'hiragana' : 'katakana'}`, summary: `Filas ${spec.rows!.join(', ')}.`, kind: 'kana', kanaIds: kanaInRows(spec.script!, spec.rows!) };
     case 'kana-weak':
       return { ...base, title: 'Los kana más flojos', summary: 'Los que peor llevas.', kind: 'kana' };
+    case 'listen':
+      return { ...base, regionId: 'r5', title: `Oído rápido · nivel ${spec.level}`, summary: 'Escucha a velocidad real.', kind: 'listening' };
   }
 }
 
@@ -115,6 +120,8 @@ export function buildVirtualPlan(id: string, snapshot: SessionSnapshot, seed: nu
     }
     case 'kana-rows':
       return { node, plan: { ...generateKanaPractice(node.kanaIds, seed, opts), nodeId: id } };
+    case 'listen':
+      return { node, plan: { ...generateListening([spec.level!], seed, opts), nodeId: id } };
     case 'kana-weak': {
       const ids = weakestKana(snapshot);
       const kanaIds = ids.length ? ids : ALL_KANA.filter((k) => k.script === 'hiragana' && k.row === 'a').map((k) => k.id);

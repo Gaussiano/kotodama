@@ -12,6 +12,7 @@ import { PriceExercise } from './PriceExercise';
 import { ClockExercise } from './ClockExercise';
 import { SignExercise } from './SignExercise';
 import { SceneExercise } from './SceneExercise';
+import { ListenFastExercise } from './ListenFastExercise';
 
 /** Routes an exercise to its component (spec §6, E1–E15). */
 export function ExerciseView(props: ExerciseProps) {
@@ -49,5 +50,7 @@ export function ExerciseView(props: ExerciseProps) {
       return <SignExercise {...props} exercise={ex} />;
     case 'E15':
       return <SceneExercise {...props} exercise={ex} />;
+    case 'E16':
+      return <ListenFastExercise {...props} exercise={ex} />;
   }
 }

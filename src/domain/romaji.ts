@@ -12,7 +12,7 @@ export function romajiVisible(mode: RomajiMode, regionId: RegionId | 'dojo', rev
       return revealed;
     case 'auto':
       if (regionId === 'dojo') return revealed;
-      if (regionId === 'r0' || regionId === 'r1' || regionId === 'r2') return true;
+      if (regionId === 'r0' || regionId === 'r1' || regionId === 'r2' || regionId === 'r5') return true;
       return revealed;
   }
 }

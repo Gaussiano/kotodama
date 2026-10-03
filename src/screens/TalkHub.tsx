@@ -76,6 +76,19 @@ export function TalkHubScreen() {
       </section>
 
       <section className="mt-6">
+        <h2 className="mb-2 text-sm font-bold text-ink-2">Oído rápido</h2>
+        <p className="mb-3 text-xs text-ink-2">Lo que te dirán y la megafonía de tus trenes, sin texto y a velocidad real.</p>
+        <div className="grid grid-cols-3 gap-2">
+          {([1, 2, 3] as const).map((l) => (
+            <button key={l} type="button" onClick={() => navigate(`/lesson/listen:${l}`)} className="min-h-16 rounded-xl border-2 border-mana-500/40 bg-mana-500/5 px-2 text-left text-sm">
+              <span className="block font-bold">Nivel {l}</span>
+              <span className="block text-xs text-ink-2">{l === 1 ? 'Velocidad normal' : l === 2 ? 'Rápido' : 'Muy rápido'}</span>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="mt-6">
         <h2 className="mb-2 text-sm font-bold text-ink-2">Conversaciones</h2>
         <p className="mb-3 text-xs text-ink-2">Tres niveles: elegir, hablar y escribir. Cada nivel se abre al superar el anterior con un 80 %.</p>
         <ul className="flex flex-col gap-3">

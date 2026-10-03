@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { KANA_BY_ID, PHRASE_BY_ID, WORD_BY_ID } from '@/content';
+import { KANA_BY_ID, KANJI_BY_ID, PHRASE_BY_ID, WORD_BY_ID } from '@/content';
+import { KANJI_BY_RUN } from '@/content/dictionary';
 import type { Exercise } from '@/domain/exercises';
 import { JpText } from '@/components/ui/JpText';
 import { useSpeak } from '@/audio/useSpeak';
@@ -20,6 +21,10 @@ function pairsFor(ex: E): { id: string; left: string; right: string; speech?: st
     if (ex.mode === 'kana') {
       const k = KANA_BY_ID[id]!;
       return { id, left: k.char, right: k.romaji, speech: k.char };
+    }
+    if (ex.mode === 'kanji') {
+      const k = KANJI_BY_ID[id]!;
+      return { id, left: k.kanji, right: k.es, speech: KANJI_BY_RUN[k.kanji.replace(/[^\u4e00-\u9fff]/g, '')]?.reading ?? k.kanji };
     }
     if (ex.mode === 'word') {
       const w = WORD_BY_ID[id]!;
@@ -100,7 +105,7 @@ export function MatchExercise({ exercise, onAutoComplete }: ExerciseProps<E>) {
         aria-pressed={isPicked}
         className={`min-h-tap w-full rounded-stone border-2 px-3 py-2 text-left transition-all ${tone}`}
       >
-        {card.jp ? <JpText className={exercise.mode === 'kana' ? 'text-2xl' : 'text-base leading-snug'}>{card.text}</JpText> : <span className="text-base">{card.text}</span>}
+        {card.jp ? <JpText variant={exercise.mode === 'kanji' ? 'ui' : 'kana'} className={exercise.mode === 'kana' || exercise.mode === 'kanji' ? 'text-2xl' : 'text-base leading-snug'}>{card.text}</JpText> : <span className="text-base">{card.text}</span>}
       </button>
     );
   };

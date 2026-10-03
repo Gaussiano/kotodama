@@ -11,7 +11,7 @@ import type { ExerciseProps } from './types';
 type E = Extract<Exercise, { type: 'E8' }>;
 
 function roleFor(regionId: string): NpcRole {
-  return regionId === 'r2' ? 'waiter' : regionId === 'r4' ? 'receptionist' : 'clerk';
+  return regionId === 'r2' ? 'waiter' : regionId === 'r4' || regionId === 'r5' ? 'receptionist' : 'clerk';
 }
 
 /** E8 «¿Qué contestas?»: an NPC says a «Lo que te dirán» line; pick the right reply from 3. */

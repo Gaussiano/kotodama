@@ -1,6 +1,6 @@
 import { definePhrases, type InfoCard, type LessonNode, type PracticeWord, type Scenario } from './types';
 import { kanaIdsFor, kanaInRows, EXTENDED_ROWS } from './kana';
-import { KANJI } from './kanji';
+import { KANJI_BASE as KANJI } from './kanji';
 
 // Región 4 · El gran viaje (26 oct – 1 nov) — hotel, transporte y ayuda — spec §10.5
 

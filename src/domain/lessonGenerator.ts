@@ -17,8 +17,10 @@ import {
 } from '@/content';
 import { randomPrice } from '@/content/numbers';
 import { HOURS } from '@/content/clock';
-import { KANJI } from '@/content/kanji';
-import { ENABLED_TYPES, type Exercise, type ExerciseType } from './exercises';
+import { KANJI, KANJI_BASE, KANJI_BY_ID } from '@/content/kanji';
+import { ROUTE_STATIONS } from '@/content/r5';
+import { toPriceReading, formatNumberEs } from '@/content/numbers';
+import { ENABLED_TYPES, type Exercise, type ExerciseType, type ListenFill } from './exercises';
 import { mulberry32, pick, sample, shuffle, type Rng } from './rng';
 import type { SrsState } from './srs';
 import { isDue } from './srs';
@@ -72,8 +74,9 @@ export function learnedWordIds(completed: string[]): Set<string> {
   return ids;
 }
 
-export function itemKind(itemId: string): 'phrase' | 'kana' | 'word' | 'unknown' {
+export function itemKind(itemId: string): 'phrase' | 'kana' | 'word' | 'kanji' | 'unknown' {
   if (PHRASE_BY_ID[itemId]) return 'phrase';
+  if (KANJI_BY_ID[itemId]) return 'kanji';
   if (KANA_BY_ID[itemId]) return 'kana';
   if (WORD_BY_ID[itemId]) return 'word';
   return 'unknown';
@@ -204,7 +207,7 @@ function e5(phrase: Phrase, rnd: Rng, isReview: boolean): Exercise {
 function e6(phrase: Phrase, isReview: boolean): Exercise {
   return { type: 'E6', uid: uid('e6'), itemId: phrase.id, isReview, evaluated: true, phraseId: phrase.id };
 }
-function e7(mode: 'kana' | 'phrase' | 'word', ids: string[]): Exercise {
+function e7(mode: 'kana' | 'phrase' | 'word' | 'kanji', ids: string[]): Exercise {
   return { type: 'E7', uid: uid('e7'), itemId: ids[0] ?? '', isReview: false, evaluated: true, mode, pairIds: ids };
 }
 function e8(hear: Phrase, rnd: Rng): Exercise | null {
@@ -273,10 +276,81 @@ function e13(rnd: Rng): Exercise {
   return { type: 'E13', uid: uid('e13'), itemId: '', isReview: false, evaluated: true, hour, half, options: shuffle([...opts.values()], rnd) };
 }
 function e14(kanjiId: string, rnd: Rng): Exercise {
-  const others = shuffle(KANJI.filter((k) => k.id !== kanjiId), rnd).slice(0, 3);
+  const group = KANJI_BY_ID[kanjiId]?.group;
+  const same = shuffle(KANJI.filter((k) => k.id !== kanjiId && k.group === group), rnd);
+  const rest = shuffle(KANJI.filter((k) => k.id !== kanjiId && k.group !== group), rnd);
+  const others = [...same, ...rest].slice(0, 3);
   const optionIds = shuffle([kanjiId, ...others.map((k) => k.id)], rnd);
   return { type: 'E14', uid: uid('e14'), itemId: kanjiId, isReview: false, evaluated: true, kanjiId, optionIds };
 }
+// ─── fast listening (E16) ─────────────────────────────────────────────────
+
+interface ListenItem {
+  phraseId: string;
+  fill?: ListenFill;
+}
+
+/** Everything you will hear: «Lo que te dirán» lines, with station names and prices filled in. */
+export function listenPool(rnd: Rng): ListenItem[] {
+  const out: ListenItem[] = [];
+  for (const p of PHRASES.filter((x) => x.kind === 'hear')) {
+    if (!p.hasBlank) {
+      out.push({ phraseId: p.id });
+      continue;
+    }
+    if (p.id === 'r4-h4' || p.id === 'r4-h5') {
+      for (const st of sample(ROUTE_STATIONS, 3, rnd)) out.push({ phraseId: p.id, fill: { kana: st.kana, es: st.es } });
+    } else if (p.id === 'r3-h6') {
+      const yen = randomPrice('konbini', rnd);
+      out.push({ phraseId: p.id, fill: { kana: toPriceReading(yen).kana.replace(/えん$/, ''), es: formatNumberEs(yen) } });
+    } else if (p.id === 'r4-h3') {
+      const floor = 2 + Math.floor(rnd() * 8);
+      const reading = ['', 'いっ', 'に', 'さん', 'よん', 'ご', 'ろっ', 'なな', 'はっ', 'きゅう'][floor]!;
+      out.push({ phraseId: p.id, fill: { kana: reading, es: `${floor}.ª` } });
+    }
+  }
+  return out;
+}
+
+function esOf(item: ListenItem): string {
+  const p = PHRASE_BY_ID[item.phraseId]!;
+  return item.fill ? p.es.replace(/＿+/g, item.fill.es) : p.es;
+}
+
+function e16(item: ListenItem, pool: ListenItem[], rate: number, rnd: Rng): Exercise {
+  const target = esOf(item);
+  // Same phrase with another fill makes the best distractor (Kioto vs Kanazawa).
+  const siblings = pool.filter((x) => x.phraseId === item.phraseId && esOf(x) !== target);
+  const others = shuffle(pool.filter((x) => x.phraseId !== item.phraseId), rnd);
+  const options: ListenItem[] = [item];
+  const seen = new Set([target]);
+  for (const x of [...shuffle(siblings, rnd).slice(0, 1), ...others]) {
+    if (options.length >= 4) break;
+    if (seen.has(esOf(x))) continue;
+    seen.add(esOf(x));
+    options.push(x);
+  }
+  return { type: 'E16', uid: uid('e16'), itemId: item.phraseId, isReview: false, evaluated: true, phraseId: item.phraseId, fill: item.fill, rate, options: shuffle(options, rnd) };
+}
+
+export const LISTEN_RATES: Record<1 | 2 | 3, number[]> = { 1: [0.95, 1.0], 2: [1.05, 1.15], 3: [1.2, 1.3] };
+
+/** A fast-listening session: 12 items, speed rising through the given level(s). */
+export function generateListening(levels: (1 | 2 | 3)[], seed: number, opts: GenOptions, count = 12): LessonPlan {
+  const rnd = mulberry32(seed);
+  uidCounter = 0;
+  const audio = opts.audioAvailable ?? true;
+  const pool = listenPool(rnd);
+  const items = sample(pool, count, rnd);
+  const rates = levels.flatMap((l) => LISTEN_RATES[l]);
+  const exercises = items.map((it, i) => {
+    const rate = rates[Math.min(rates.length - 1, Math.floor((i / items.length) * rates.length))]!;
+    const ex = e16(it, pool, rate, rnd);
+    return audio ? ex : { ...ex, textOnly: true };
+  });
+  return { nodeId: 'listen', kind: 'listening', exercises, newItemIds: [], reviewItemIds: [], usesHearts: false, passThreshold: 0 };
+}
+
 function e15(sceneId: string): Exercise {
   return { type: 'E15', uid: uid('e15'), itemId: '', isReview: false, evaluated: true, sceneId };
 }
@@ -334,6 +408,7 @@ export function reviewExerciseFor(itemId: string, rnd: Rng, opts: GenOptions, le
   }
   if (kind === 'kana') return e11kana(itemId, rnd() < 0.5 ? 'kana-romaji' : 'romaji-kana', rnd, true, level === 'hard' && enabled.has('E6') ? 'type' : 'choose');
   if (kind === 'word') return e11word(WORD_BY_ID[itemId]!, rnd, true, level === 'hard' && enabled.has('E6') ? 'type' : 'choose');
+  if (kind === 'kanji') return { ...e14(itemId, rnd), isReview: true };
   return null;
 }
 
@@ -435,7 +510,7 @@ export function generateLesson(node: LessonNode, snapshot: ProgressSnapshot, see
   const audio = opts.audioAvailable ?? true;
   uidCounter = 0;
 
-  const base = { nodeId: node.id, kind: node.kind, usesHearts: node.kind === 'phrases' || node.kind === 'heard' || node.kind === 'kana' || node.kind === 'boss' || node.kind === 'finalBoss', passThreshold: 0 };
+  const base = { nodeId: node.id, kind: node.kind, usesHearts: node.kind === 'phrases' || node.kind === 'heard' || node.kind === 'kana' || node.kind === 'signs' || node.kind === 'boss' || node.kind === 'finalBoss', passThreshold: 0 };
 
   switch (node.kind) {
     case 'intro':
@@ -448,6 +523,12 @@ export function generateLesson(node: LessonNode, snapshot: ProgressSnapshot, see
       return { ...base, ...heardLesson(node, snapshot, rnd, enabled, audio, opts) };
     case 'prices':
       return { ...base, usesHearts: false, ...pricesLesson(node, snapshot, rnd, enabled, audio) };
+    case 'signs':
+      return { ...base, ...signsLesson(node, snapshot, rnd, enabled, opts) };
+    case 'listening': {
+      const l = generateListening([1, 2, 3], seed, opts, 12);
+      return { ...base, usesHearts: false, exercises: [...node.infoCardIds.map(e1card), ...l.exercises], newItemIds: [], reviewItemIds: [] };
+    }
     case 'review':
       return { ...base, usesHearts: false, ...reviewLesson(snapshot, rnd, opts) };
     case 'boss':
@@ -561,14 +642,27 @@ function phraseLesson(node: LessonNode, snapshot: ProgressSnapshot, rnd: Rng, en
   // Extras: survival kanji (E14), prices (E12) and clock (E13) drills attached to the node.
   const extra: Exercise[] = [];
   if (enabled.has('E14') && node.kanjiIds?.length) for (const k of sample(node.kanjiIds, 6, rnd)) extra.push(e14(k, rnd));
+  if (enabled.has('E7') && (node.kanjiIds?.length ?? 0) >= 5) extra.push(e7('kanji', sample(node.kanjiIds!, 5, rnd)));
   if (enabled.has('E12') && node.extras?.includes('prices')) for (let i = 0; i < 2; i++) extra.push(e12(i === 0 ? 'konbini' : 'shop', 'choose', rnd));
   if (enabled.has('E13') && node.extras?.includes('clock')) for (let i = 0; i < 3; i++) extra.push(e13(rnd));
 
   return {
     exercises: [...exercises, ...body, ...wordEx, ...extra],
-    newItemIds: [...node.phraseIds, ...node.kanaIds, ...words.map((w) => w.id)],
+    newItemIds: [...node.phraseIds, ...node.kanaIds, ...words.map((w) => w.id), ...(node.kanjiIds ?? [])],
     reviewItemIds: reviews.map((r) => r.itemId),
   };
+}
+
+/** Kanji sign lessons («Tu ruta»): cards, every sign, matching rounds, a second pass. */
+function signsLesson(node: LessonNode, snapshot: ProgressSnapshot, rnd: Rng, enabled: Set<ExerciseType>, opts: GenOptions): Partial {
+  const ids = node.kanjiIds ?? [];
+  const exercises: Exercise[] = node.infoCardIds.map(e1card);
+  const first = shuffle(ids, rnd).map((k) => e14(k, rnd));
+  const matches: Exercise[] = [];
+  if (enabled.has('E7')) for (let i = 0; i + 4 <= ids.length; i += 5) matches.push(e7('kanji', shuffle(ids, rnd).slice(0, 5)));
+  const second = sample(ids, Math.ceil(ids.length / 2), rnd).map((k) => e14(k, rnd));
+  const reviews = reviewBlock(snapshot, rnd, opts, new Set(ids), 3);
+  return { exercises: [...exercises, ...interleave([...first, ...matches, ...second], reviews)], newItemIds: ids, reviewItemIds: reviews.map((r) => r.itemId) };
 }
 
 function heardLesson(node: LessonNode, snapshot: ProgressSnapshot, rnd: Rng, enabled: Set<ExerciseType>, audio: boolean, opts: GenOptions): Partial {
@@ -607,7 +701,7 @@ function reviewLesson(snapshot: ProgressSnapshot, rnd: Rng, opts: GenOptions): P
 }
 
 function bossLesson(regionId: RegionId, _snapshot: ProgressSnapshot, rnd: Rng, enabled: Set<ExerciseType>, audio: boolean, final: boolean): Partial {
-  const regions = final ? REGION_ORDER.filter((r) => r !== 'r0') : [regionId];
+  const regions: RegionId[] = final ? REGION_ORDER.filter((r) => r !== 'r0') : [regionId];
   const sayPhrases = PHRASES.filter((p) => regions.includes(p.regionId) && p.kind === 'say' && !p.hidden);
   const hearPhrases = PHRASES.filter((p) => regions.includes(p.regionId) && p.kind === 'hear' && (p.suggestedReplies?.length ?? 0) > 0);
   const scenarios = SCENARIOS.filter((s) => regions.includes(s.regionId));
@@ -629,7 +723,12 @@ function bossLesson(regionId: RegionId, _snapshot: ProgressSnapshot, rnd: Rng, e
   // Guardian R3 (spec §10.4): read 150, 380, 1 000, 2 600, 7 800 and 15 000 yen aloud → price readings.
   if (regionId === 'r3' && !final && enabled.has('E12')) for (const yen of sample([150, 380, 1000, 2600, 7800, 15000], 3, rnd)) exercises.push(e12(yen <= 3000 ? 'konbini' : 'shop', 'choose', rnd, yen));
   if (final && enabled.has('E12')) exercises.push(e12('shop', 'choose', rnd));
-  if (regionId === 'r4' && enabled.has('E14')) for (const k of sample(KANJI, 2, rnd)) exercises.push(e14(k.id, rnd));
+  if (regionId === 'r4' && !final && enabled.has('E14')) for (const k of sample(KANJI_BASE, 2, rnd)) exercises.push(e14(k.id, rnd));
+  if (regionId === 'r5' && enabled.has('E14')) for (const k of sample(KANJI.filter((x) => x.group !== 'base'), 4, rnd)) exercises.push(e14(k.id, rnd));
+  if (regionId === 'r5' && enabled.has('E16') && audio) {
+    const pool = listenPool(rnd);
+    for (const it of sample(pool, 2, rnd)) exercises.push(e16(it, pool, 1.15, rnd));
+  }
   const regionKana = NODES.filter((n) => n.regionId === regionId).flatMap((n) => n.kanaIds);
   if (!final && regionKana.length && enabled.has('E11')) for (const k of sample(regionKana, 2, rnd)) exercises.push(e11kana(k, 'kana-romaji', rnd, false));
 

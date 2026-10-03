@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BLANK, PHRASES, type Category, type Phrase } from '@/content';
+import { BLANK, PHRASE_BY_ID, PHRASES, ROUTE_HOTELS, type Category, type Phrase } from '@/content';
 import { formatNumberEs, toJapaneseReading, toPriceReading } from '@/content/numbers';
 import { normalizeAnswer } from '@/domain/answerCheck';
 import { useProgressStore } from '@/store/progressStore';
@@ -10,8 +10,9 @@ import { JpText } from '@/components/ui/JpText';
 import { Star } from './Grimoire';
 import { Furigana } from '@/components/ui/Furigana';
 
-type TravelCat = Category | 'hear' | 'numbers';
+type TravelCat = Category | 'hear' | 'numbers' | 'route';
 const CATS: { id: TravelCat; label: string; hint: string }[] = [
+  { id: 'route', label: 'Tu ruta', hint: 'Hoteles para el taxi y trenes' },
   { id: 'basics', label: 'Básicos', hint: 'Saludos, gracias, perdón' },
   { id: 'restaurant', label: 'Restaurante', hint: 'Mesa, pedir, pagar' },
   { id: 'shopping', label: 'Tiendas y konbini', hint: 'Precios, bolsa, tarjeta' },
@@ -36,6 +37,7 @@ export function TravelModeScreen() {
   const [cat, setCat] = useState<TravelCat | 'favorites' | null>(null);
   const [query, setQuery] = useState('');
   const [show, setShow] = useState<Phrase | null>(null);
+  const [showFill, setShowFill] = useState<{ jp: string; es: string } | null>(null);
 
   const q = query.trim();
   const results = useMemo(() => {
@@ -48,6 +50,7 @@ export function TravelModeScreen() {
   const listFor = (c: TravelCat | 'favorites'): Phrase[] => {
     if (c === 'favorites') return PHRASES.filter((p) => favorites.includes(p.id));
     if (c === 'numbers') return [];
+    if (c === 'route') return PHRASES.filter((p) => p.regionId === 'r5' && p.kind === 'say' && p.category === 'transport');
     return PHRASES.filter((p) => !p.hidden && (c === 'hear' ? p.kind === 'hear' : p.kind === 'say' && p.category === c));
   };
 
@@ -60,7 +63,18 @@ export function TravelModeScreen() {
     navigate('/');
   };
 
-  if (show) return <ShowStaff phrase={show} fill={filledBlanks[show.id]} onClose={() => setShow(null)} />;
+  if (show)
+    return (
+      <ShowStaff
+        phrase={show}
+        fill={showFill?.jp ?? filledBlanks[show.id]}
+        esFill={showFill?.es}
+        onClose={() => {
+          setShow(null);
+          setShowFill(null);
+        }}
+      />
+    );
 
   return (
     <main className="screen pb-10">
@@ -110,6 +124,30 @@ export function TravelModeScreen() {
             ← Categorías
           </button>
           <h2 className="mt-1 font-display text-xl">{cat === 'favorites' ? 'Favoritos' : CATS.find((c) => c.id === cat)?.label}</h2>
+          {cat === 'route' && (
+            <ul className="mt-3 flex flex-col gap-2">
+              {ROUTE_HOTELS.map((h) => (
+                <li key={h.city} className="rounded-stone border-2 border-region-r5/50 bg-surface px-4 py-3">
+                  <p className="text-xs font-bold text-ink-2">
+                    {h.city} · {h.dates}
+                  </p>
+                  <Furigana as="p" text={h.jp} className="text-xl leading-loose" />
+                  <p className="text-sm text-ink-2">{h.es}</p>
+                  <button
+                    type="button"
+                    className="mt-2 min-h-10 rounded-full bg-mana-500/15 px-3 text-sm font-bold text-mana-500"
+                    onClick={() => {
+                      setShowFill({ jp: h.jp, es: h.es });
+                      setShow(PHRASE_BY_ID['r4-p11']!);
+                    }}
+                  >
+                    Enseñar al taxista
+                  </button>
+                </li>
+              ))}
+              <li className="text-xs text-ink-2">Comprueba el nombre exacto en japonés en tu reserva: las cadenas a veces lo escriben distinto.</li>
+            </ul>
+          )}
           {cat === 'numbers' ? <PriceCalculator rate={rate} /> : <PhraseList phrases={listFor(cat)} favorites={favorites} onFav={toggleFavorite} onShow={setShow} filled={filledBlanks} setBlank={setBlank} emptyText="Marca frases con la estrella para tenerlas aquí." />}
         </>
       )}
@@ -167,7 +205,7 @@ function PhraseList({ phrases, favorites, onFav, onShow, filled, setBlank, empty
 }
 
 /** «Enseñar al personal»: full screen, light background, huge Japanese, small translation; keeps the screen on. */
-function ShowStaff({ phrase, fill, onClose }: { phrase: Phrase; fill?: string; onClose: () => void }) {
+function ShowStaff({ phrase, fill, esFill, onClose }: { phrase: Phrase; fill?: string; esFill?: string; onClose: () => void }) {
   const lock = useRef<{ release: () => Promise<void> } | null>(null);
   const text = phrase.kanji && fill?.trim() ? phrase.kanji.replace(/＿+/g, fill.trim()) : phrase.kanji ?? fillKana(phrase, fill);
   useEffect(() => {
@@ -184,7 +222,7 @@ function ShowStaff({ phrase, fill, onClose }: { phrase: Phrase; fill?: string; o
       </button>
       <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
         <Furigana as="p" text={text} className="text-[3.25rem] font-semibold leading-[1.6]" />
-        <p className="mt-6 text-base text-[#425C50]">{fill ? phrase.es.replace(/＿+/g, fill) : phrase.es}</p>
+        <p className="mt-6 text-base text-[#425C50]">{fill ? phrase.es.replace(/＿+/g, esFill ?? fill) : phrase.es}</p>
       </div>
     </div>
   );

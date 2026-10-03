@@ -42,6 +42,6 @@ describe('conversations content', () => {
     const missing = PHRASES.filter((p) => !p.kanji && !p.hidden).map((p) => p.id);
     // Phrases written naturally without kanji are allowed; just make sure the field is used broadly.
     expect(PHRASES.filter((p) => p.kanji).length).toBeGreaterThan(50);
-    expect(missing.length).toBeLessThan(25);
+    expect(missing.length).toBeLessThan(30);
   });
 });

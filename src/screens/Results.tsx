@@ -31,7 +31,7 @@ export interface LessonSummary {
   /** Kana of the last phrase learned, for the completed spell circle. */
   circleKana: string;
   skipExam: boolean;
-  session: 'lesson' | 'review' | 'kana';
+  session: 'lesson' | 'review' | 'kana' | 'listen';
   heartRecovered?: boolean;
 }
 
@@ -81,7 +81,7 @@ export function ResultsScreen({ summary }: { summary: LessonSummary }) {
         </div>
         <p className="text-sm font-semibold text-ink-2">{summary.node.title}</p>
         <h1 className="font-display text-2xl">
-          {isBoss ? (summary.passed ? 'Guardián superado' : 'El guardián resiste') : summary.session === 'review' ? 'Repaso completado' : summary.session === 'kana' ? 'Práctica completada' : 'Hechizo aprendido'}
+          {isBoss ? (summary.passed ? 'Guardián superado' : 'El guardián resiste') : summary.session === 'review' ? 'Repaso completado' : summary.session === 'kana' || summary.session === 'listen' ? 'Práctica completada' : 'Hechizo aprendido'}
           {summary.xp > 0 && <span className="text-rune-gold"> · +{summary.xp} de maná</span>}
         </h1>
         {summary.perfect && won && <p className="mt-1 text-sm font-bold text-moss-500">Lección perfecta: +5 de maná extra</p>}
@@ -159,8 +159,8 @@ export function ResultsScreen({ summary }: { summary: LessonSummary }) {
       )}
 
       <div className="mt-auto flex flex-col gap-2">
-        <button className="btn-primary" onClick={() => navigate(summary.session === 'review' ? '/review' : summary.session === 'kana' ? '/kana' : '/', { replace: true })}>
-          {summary.session === 'review' ? 'Volver a Repaso' : summary.session === 'kana' ? 'Volver al dojo' : 'Volver al mapa'}
+        <button className="btn-primary" onClick={() => navigate(summary.session === 'review' ? '/review' : summary.session === 'kana' ? '/kana' : summary.session === 'listen' ? '/talk' : '/', { replace: true })}>
+          {summary.session === 'review' ? 'Volver a Repaso' : summary.session === 'kana' ? 'Volver al dojo' : summary.session === 'listen' ? 'Volver a Hablar' : 'Volver al mapa'}
         </button>
         {isBoss && !summary.passed && (
           <button className="btn-secondary" onClick={() => navigate(0)}>

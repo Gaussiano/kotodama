@@ -11,6 +11,8 @@ export interface UnlockSnapshot {
 export type NodeStatus = 'locked' | 'available' | 'completed';
 
 export function isRegionOpen(regionId: RegionId, s: UnlockSnapshot): boolean {
+  // «Tu ruta» is an extra region: it opens when the tavern guardian (R2) is beaten.
+  if (regionId === 'r5') return s.passedBosses.includes('r2');
   const idx = REGION_ORDER.indexOf(regionId);
   if (idx <= 0) return true;
   const prev = REGION_ORDER[idx - 1]!;

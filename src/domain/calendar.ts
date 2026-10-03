@@ -1,4 +1,4 @@
-import { NODES, PLAN, type LessonNode } from '@/content';
+import { MAIN_NODES as NODES, PLAN, type LessonNode } from '@/content';
 import { diffDays, type DayKey } from './dates';
 import { nodeStatus, type UnlockSnapshot } from './unlock';
 

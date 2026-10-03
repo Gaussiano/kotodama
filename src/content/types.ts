@@ -1,7 +1,7 @@
 // Content model (spec §13). Content files are plain typed data; no logic lives here except helpers
 // that derive fields (segments, hasBlank) so the hand-written data stays close to the dossier format.
 
-export type RegionId = 'r0' | 'r1' | 'r2' | 'r3' | 'r4';
+export type RegionId = 'r0' | 'r1' | 'r2' | 'r3' | 'r4' | 'r5';
 
 export type Category = 'basics' | 'restaurant' | 'shopping' | 'hotel' | 'transport' | 'help';
 
@@ -59,7 +59,7 @@ export interface InfoCard {
   examples?: { jp: string; romaji: string; es: string }[];
 }
 
-export type NodeKind = 'intro' | 'phrases' | 'kana' | 'heard' | 'review' | 'prices' | 'boss' | 'finalBoss';
+export type NodeKind = 'intro' | 'phrases' | 'kana' | 'heard' | 'review' | 'prices' | 'signs' | 'listening' | 'boss' | 'finalBoss';
 
 export interface LessonNode {
   id: string; // 'r2-3'
@@ -77,7 +77,9 @@ export interface LessonNode {
   kanjiIds?: string[];
   /** Extra drills: 'prices' adds E12, 'clock' adds E13. */
   extras?: ('prices' | 'clock')[];
-  recommendedDate: string; // ISO 'YYYY-MM-DD'
+  recommendedDate: string; // ISO 'YYYY-MM-DD' ('' for extra nodes)
+  /** Outside the dossier calendar («Tu ruta»): never «Hoy toca», not counted as «behind». */
+  extra?: boolean;
   /** Human label from the dossier calendar («Mié 7 – Jue 8»). */
   dayLabel: string;
 }
@@ -111,7 +113,7 @@ export interface Scene {
   regionId: RegionId;
   title: string;
   setting: string;
-  npcRole: 'clerk' | 'receptionist' | 'waiter' | 'conductor' | 'passerby';
+  npcRole: 'clerk' | 'receptionist' | 'waiter' | 'conductor' | 'passerby' | 'driver';
   turns: SceneTurn[];
 }
 
@@ -129,7 +131,8 @@ export interface KanjiSign {
   kanji: string;
   romaji: string;
   es: string;
-  sign: 'door' | 'toilet' | 'station' | 'price' | 'shop' | 'notice';
+  sign: 'door' | 'toilet' | 'station' | 'price' | 'shop' | 'notice' | 'board' | 'direction' | 'menu' | 'onsen';
+  group: 'base' | 'transport' | 'street' | 'menu' | 'onsen';
 }
 
 // ─── helpers ────────────────────────────────────────────────────────────────

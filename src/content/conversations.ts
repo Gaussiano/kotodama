@@ -67,7 +67,69 @@ const EXTRA: Scene[] = [
   },
 ];
 
-export const CONVERSATIONS: Scene[] = [...SCENES, ...EXTRA];
+// «Tu ruta» (user request): one conversation per leg of the real itinerary.
+const ROUTE: Scene[] = [
+  {
+    id: 'conv-osaka-kyoto',
+    regionId: 'r5',
+    title: 'De Osaka a Kioto',
+    setting: 'Día 6, por la mañana. Salís del hotel de Shinsaibashi y buscáis el tren a Kioto.',
+    npcRole: 'passerby',
+    turns: [
+      { narration: 'Paras a alguien por la calle con educación.', options: [{ phraseId: 'r1-p6' }, { phraseId: 'r1-p3' }, { phraseId: 'r1-p7' }], correct: ['r1-p6'] },
+      { narration: 'Preguntas por la estación de Osaka.', options: [{ phraseId: 'r5-i1' }, { phraseId: 'r4-p8' }, { phraseId: 'r5-i3' }], correct: ['r5-i1'] },
+      { npc: { kana: 'あそこです。まっすぐです', romaji: 'asoko desu. massugu desu', es: 'Es allí. Todo recto.', generated: true }, options: [{ phraseId: 'r1-p4' }, { phraseId: 'r1-p9' }, { phraseId: 'r4-p14' }], correct: ['r1-p4', 'r1-p5'] },
+      { narration: 'En el andén, compruebas que el tren va a Kioto.', options: [{ phraseId: 'r5-i2' }, { phraseId: 'r5-i4' }, { phraseId: 'r4-p12' }], correct: ['r5-i2'] },
+      { npc: { kana: 'はい、いきますよ', romaji: 'hai, ikimasu yo', es: 'Sí, va.', generated: true }, options: [{ phraseId: 'r1-p4' }, { phraseId: 'r1-p7' }, { phraseId: 'r2-p19' }], correct: ['r1-p4', 'r1-p5'] },
+    ],
+  },
+  {
+    id: 'conv-kanazawa',
+    regionId: 'r5',
+    title: 'Billetes a Kanazawa',
+    setting: 'Día 9. Ventanilla de JR en la estación de Kioto: queréis el Thunderbird.',
+    npcRole: 'clerk',
+    turns: [
+      { narration: 'Saludas: es media mañana.', options: [{ phraseId: 'r1-p2' }, { phraseId: 'r1-p3' }, { phraseId: 'r1-p12' }], correct: ['r1-p2', 'r1-p1'] },
+      { narration: 'Pides dos billetes de adulto a Kanazawa.', options: [{ phraseId: 'r5-i5' }, { phraseId: 'r5-i7' }, { phraseId: 'r5-i6' }], correct: ['r5-i5'] },
+      { npc: { kana: 'していせきですか、じゆうせきですか', romaji: 'shiteiseki desu ka, jiyūseki desu ka', es: '¿Asiento reservado o no reservado?', generated: true }, options: [{ phraseId: 'r5-i6' }, { phraseId: 'r3-p12' }, { phraseId: 'r1-p15' }], correct: ['r5-i6'] },
+      { npc: { phraseId: 'r3-h5' }, options: [{ phraseId: 'r3-p16' }, { phraseId: 'r3-p7' }, { phraseId: 'r3-p12' }], correct: ['r3-p16', 'r3-p7'] },
+      { npc: { phraseId: 'r1-h2' }, options: [{ phraseId: 'r1-p5' }, { phraseId: 'r1-p4' }, { phraseId: 'r1-p7' }], correct: ['r1-p5', 'r1-p4'] },
+    ],
+  },
+  {
+    id: 'conv-ryokan',
+    regionId: 'r5',
+    title: 'Llegada al ryokan',
+    setting: 'Día 11, 12:30. Llegáis al ryokan de Hakone tras el Romancecar.',
+    npcRole: 'receptionist',
+    turns: [
+      { npc: { kana: 'ようこそ いらっしゃいました', romaji: 'yōkoso irasshaimashita', es: 'Bienvenidos', generated: true }, options: [{ phraseId: 'r1-p2' }, { phraseId: 'r1-p3' }, { phraseId: 'r2-p19' }], correct: ['r1-p2'] },
+      { narration: 'Dices que tienes reserva a tu nombre.', options: [{ phraseId: 'r4-p2' }, { phraseId: 'r2-p3' }, { phraseId: 'r4-p1' }], correct: ['r4-p2'], fill: 'userName' },
+      { npc: { phraseId: 'r5-h1' }, options: [{ phraseId: 'r1-p4' }, { phraseId: 'r2-p17' }, { phraseId: 'r1-p9' }], correct: ['r1-p4'] },
+      { narration: 'Preguntas dónde está el onsen.', options: [{ phraseId: 'r5-p2' }, { phraseId: 'r4-p8' }, { phraseId: 'r5-p3' }], correct: ['r5-p2'] },
+      { npc: { phraseId: 'r5-h2' }, options: [{ phraseId: 'r1-p4' }, { phraseId: 'r1-p15' }, { phraseId: 'r1-p7' }], correct: ['r1-p4'] },
+      { narration: 'No sabes cómo se pone el yukata.', options: [{ phraseId: 'r5-p4' }, { phraseId: 'r5-p5' }, { phraseId: 'r5-p6' }], correct: ['r5-p4'] },
+      { npc: { phraseId: 'r5-h4' }, options: [{ phraseId: 'r1-p4' }, { phraseId: 'r1-p17' }, { phraseId: 'r2-p21' }], correct: ['r1-p4'] },
+    ],
+  },
+  {
+    id: 'conv-tokyo-taxi',
+    regionId: 'r5',
+    title: 'Taxi a Asakusabashi',
+    setting: 'Día 12. Volvéis de Hakone y cogéis un taxi en la estación de Tokio hasta el hotel.',
+    npcRole: 'driver',
+    turns: [
+      { narration: 'La puerta se abre sola. Dices adónde vais.', options: [{ phraseId: 'r5-i7' }, { phraseId: 'r5-i1' }, { phraseId: 'r5-i3' }], correct: ['r5-i7'] },
+      { npc: { kana: 'あさくさばしですね', romaji: 'Asakusabashi desu ne', es: 'A Asakusabashi, ¿verdad?', generated: true }, options: [{ phraseId: 'r1-p8a' }, { phraseId: 'r1-p8b' }, { phraseId: 'r4-p14' }], correct: ['r1-p8a'] },
+      { npc: { phraseId: 'r3-h6' }, narration: 'Al llegar te dice el importe.', fill: 'price' },
+      { npc: { phraseId: 'r3-h5' }, options: [{ phraseId: 'r3-p16' }, { phraseId: 'r3-p7' }, { phraseId: 'r3-p6' }], correct: ['r3-p16', 'r3-p7'] },
+      { narration: 'Al bajar del taxi.', options: [{ phraseId: 'r1-p4' }, { phraseId: 'r2-p19' }, { phraseId: 'r1-p12' }], correct: ['r1-p4', 'r1-p5'] },
+    ],
+  },
+];
+
+export const CONVERSATIONS: Scene[] = [...SCENES, ...EXTRA, ...ROUTE];
 export const CONVERSATION_BY_ID: Record<string, Scene> = Object.fromEntries(CONVERSATIONS.map((c) => [c.id, c]));
 
 export type TalkLevel = 1 | 2 | 3;

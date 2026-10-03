@@ -83,6 +83,17 @@ Vitest + Testing Library · Web Speech API (ja-JP) · Web Audio sfx synthesized 
   kanji runs of their kanji form/note, practice words, E14 signs); manual «Guardar en el diccionario» via `KanjiSheet`.
 - Screen `/dictionary` (from Grimorio and Perfil): Kanji | Palabras, search, «Ver todo» to browse unlearned entries.
 
+## «Tu ruta» region (user request, added 2026-10-03)
+- Region `r5` (extra, `extra: true` nodes, not in the dossier calendar; `MAIN_NODES` excludes it). Opens when the R2
+  guardian is passed; shown on the map after La taberna. 7 nodes + guardian: route phrases, transport/street/menu
+  kanji (`kind: 'signs'`), ryokan & onsen, fast listening (`kind: 'listening'`, E16).
+- 35 kanji added in `kanji.ts` by group (transport 12, street 8, menu 10, onsen 5); E14 distractors come from the
+  same group. New sign drawings: departure board, direction sign, vertical menu board, onsen curtain.
+- E16 «Oído rápido»: audio only at rate 0.95→1.3, no slow replay; options are the meanings of other «Lo que te dirán»
+  lines, with station names/prices filled (Kioto vs Kanazawa as distractors). Also `listen:1|2|3` in Hablar.
+- All r5 phrases and the route conversations are `generated: true`. Hotel names in `ROUTE_HOTELS` must be checked
+  against the bookings. Modo viaje has a «Tu ruta» category with «Enseñar al taxista» per hotel.
+
 ## Commands
 ```
 npm run dev      # local dev server

@@ -1,4 +1,4 @@
-import { HIRAGANA, KATAKANA, NODES, PLAN } from '@/content';
+import { HIRAGANA, KATAKANA, MAIN_NODES as NODES, PLAN } from '@/content';
 import type { Progress } from '@/store/progressStore';
 import { localDayKey } from './dates';
 
@@ -30,6 +30,7 @@ export const ACHIEVEMENTS: AchievementDef[] = [
   { id: 'ready', title: 'Preparado para Japón', description: 'Todo completado antes del 2 de noviembre.', tone: 'gold' },
   { id: 'clear-voice', title: 'Voz clara', description: '20 frases reconocidas por el micrófono.', tone: 'mana' },
   { id: 'talker', title: 'Conversador', description: 'Una conversación completa hablando (nivel 2).', tone: 'moss' },
+  { id: 'route', title: 'Ruta trazada', description: 'Guardián de tu ruta superado.', tone: 'bark' },
   { id: 'storyteller', title: 'Narrador', description: 'Una conversación completa escribiendo (nivel 3).', tone: 'gold' },
 ];
 
@@ -71,6 +72,7 @@ export function evaluateAchievements(p: Progress, ctx: AchievementContext): stri
   earn('early-bird', Boolean(isLesson && hour < 8));
   earn('ready', NODES.every((n) => completed.has(n.id)) && localDayKey(ctx.now) < PLAN.tripStart);
   earn('clear-voice', p.pronouncedCount >= 20);
+  earn('route', p.passedBosses.includes('r5'));
   earn('talker', Object.values(p.talk).some((t) => (t.best['2'] ?? 0) >= 0.8));
   earn('storyteller', Object.values(p.talk).some((t) => (t.best['3'] ?? 0) >= 0.8));
   return out;

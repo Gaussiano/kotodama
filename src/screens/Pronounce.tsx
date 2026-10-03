@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ALL_KANA, CATEGORY_LABEL, PHRASES, WORDS, type Category } from '@/content';
+import { ALL_KANA, CATEGORY_LABEL, PHRASES, WORDS, type Category, type RegionId } from '@/content';
 import { learnedKanaIds, learnedPhraseIds, learnedWordIds } from '@/domain/lessonGenerator';
 import { mulberry32, sample, seedFromString } from '@/domain/rng';
 import { romajiVisible } from '@/domain/romaji';
@@ -20,7 +20,7 @@ interface Item {
   es: string;
   kanji?: string;
   speech?: string;
-  regionId: 'r0' | 'r1' | 'r2' | 'r3' | 'r4';
+  regionId: RegionId;
 }
 
 /** Pronunciation session by topic: up to 10 learned phrases, each judged by the microphone. */

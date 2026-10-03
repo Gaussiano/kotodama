@@ -6,7 +6,7 @@ import { useProgressStore } from '@/store/progressStore';
 describe('kanji readings', () => {
   it('cover every kanji run used in the content', () => {
     const root = join(__dirname, '..', '..');
-    const files = ['r0.ts', 'r1.ts', 'r2.ts', 'r3.ts', 'r4.ts', 'kanji.ts', 'scenes.ts', 'conversations.ts'].map((f) => join(root, 'src/content', f));
+    const files = ['r0.ts', 'r1.ts', 'r2.ts', 'r3.ts', 'r4.ts', 'r5.ts', 'kanji.ts', 'scenes.ts', 'conversations.ts'].map((f) => join(root, 'src/content', f));
     files.push(join(root, 'src/screens/Onboarding.tsx'));
     const missing = new Set<string>();
     for (const f of files) for (const run of kanjiRuns(readFileSync(f, 'utf8'))) if (!KANJI_BY_RUN[run]) missing.add(run);

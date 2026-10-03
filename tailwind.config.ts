@@ -34,6 +34,7 @@ export default {
           r2: rgb('region-r2'),
           r3: rgb('region-r3'),
           r4: rgb('region-r4'),
+          r5: rgb('region-r5'),
         },
       },
       fontFamily: {

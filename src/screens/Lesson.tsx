@@ -146,7 +146,7 @@ export function LessonScreen() {
         newAchievements: res.newAchievements,
         circleKana: lastPhrase?.kana ?? '言霊',
         skipExam,
-        session: virtualSpec ? (virtualSpec.kind.startsWith('review') ? 'review' : 'kana') : 'lesson',
+        session: virtualSpec ? (virtualSpec.kind.startsWith('review') ? 'review' : virtualSpec.kind === 'listen' ? 'listen' : 'kana') : 'lesson',
         heartRecovered: virtualSpec?.kind === 'review-hearts' && reviewedWrong?.length === 0 && Boolean(reviewedCorrect?.length),
       });
       setStatus('done');
