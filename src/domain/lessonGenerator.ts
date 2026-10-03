@@ -250,8 +250,8 @@ function e11word(word: PracticeWord, rnd: Rng, isReview: boolean, mode: 'choose'
   const options = mode === 'type' ? [] : shuffle([word.romaji, ...wordRomajiDistractors(word, 3, rnd)], rnd);
   return { type: 'E11', uid: uid('e11w'), itemId: word.id, isReview, evaluated: true, direction: 'kana-romaji', mode, wordId: word.id, options };
 }
-function e12(kind: 'konbini' | 'shop', mode: 'choose' | 'type', rnd: Rng): Exercise {
-  const yen = randomPrice(kind, rnd);
+function e12(kind: 'konbini' | 'shop', mode: 'choose' | 'type', rnd: Rng, fixedYen?: number): Exercise {
+  const yen = fixedYen ?? randomPrice(kind, rnd);
   const options = new Set<number>([yen]);
   let guard = 0;
   while (options.size < 4 && guard++ < 50) options.add(randomPrice(kind, rnd));
@@ -545,8 +545,14 @@ function phraseLesson(node: LessonNode, snapshot: ProgressSnapshot, rnd: Rng, en
   const words = availableWords(node, snapshot);
   const wordEx = wordBlock(words, rnd, enabled, audio, 4);
 
+  // Extras: survival kanji (E14), prices (E12) and clock (E13) drills attached to the node.
+  const extra: Exercise[] = [];
+  if (enabled.has('E14') && node.kanjiIds?.length) for (const k of sample(node.kanjiIds, 6, rnd)) extra.push(e14(k, rnd));
+  if (enabled.has('E12') && node.extras?.includes('prices')) for (let i = 0; i < 2; i++) extra.push(e12(i === 0 ? 'konbini' : 'shop', 'choose', rnd));
+  if (enabled.has('E13') && node.extras?.includes('clock')) for (let i = 0; i < 3; i++) extra.push(e13(rnd));
+
   return {
-    exercises: [...exercises, ...body, ...wordEx],
+    exercises: [...exercises, ...body, ...wordEx, ...extra],
     newItemIds: [...node.phraseIds, ...node.kanaIds, ...words.map((w) => w.id)],
     reviewItemIds: reviews.map((r) => r.itemId),
   };
@@ -607,7 +613,9 @@ function bossLesson(regionId: RegionId, _snapshot: ProgressSnapshot, rnd: Rng, e
     }
   }
   if (enabled.has('E9')) for (const s of shuffle(scenarios, rnd).slice(0, final ? 4 : 4)) exercises.push(e9(s.id, rnd));
-  if (regionId === 'r3' && enabled.has('E12')) for (let i = 0; i < 3; i++) exercises.push(e12(i === 0 ? 'konbini' : 'shop', 'choose', rnd));
+  // Guardian R3 (spec §10.4): read 150, 380, 1 000, 2 600, 7 800 and 15 000 yen aloud → price readings.
+  if (regionId === 'r3' && !final && enabled.has('E12')) for (const yen of sample([150, 380, 1000, 2600, 7800, 15000], 3, rnd)) exercises.push(e12(yen <= 3000 ? 'konbini' : 'shop', 'choose', rnd, yen));
+  if (final && enabled.has('E12')) exercises.push(e12('shop', 'choose', rnd));
   if (regionId === 'r4' && enabled.has('E14')) for (const k of sample(KANJI, 2, rnd)) exercises.push(e14(k.id, rnd));
   const regionKana = NODES.filter((n) => n.regionId === regionId).flatMap((n) => n.kanaIds);
   if (!final && regionKana.length && enabled.has('E11')) for (const k of sample(regionKana, 2, rnd)) exercises.push(e11kana(k, 'kana-romaji', rnd, false));

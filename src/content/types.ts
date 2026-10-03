@@ -73,6 +73,10 @@ export interface LessonNode {
   infoCardIds: string[];
   practiceWordIds?: string[];
   sceneId?: string;
+  /** Survival kanji trained with E14 in this node. */
+  kanjiIds?: string[];
+  /** Extra drills: 'prices' adds E12, 'clock' adds E13. */
+  extras?: ('prices' | 'clock')[];
   recommendedDate: string; // ISO 'YYYY-MM-DD'
   /** Human label from the dossier calendar («Mié 7 – Jue 8»). */
   dayLabel: string;

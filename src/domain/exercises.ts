@@ -34,6 +34,6 @@ export type Exercise =
 export const ALL_TYPES: ExerciseType[] = ['E1', 'E1card', 'E1word', 'E2', 'E3', 'E4', 'E5', 'E6', 'E7', 'E8', 'E9', 'E10', 'E11', 'E12', 'E13', 'E14', 'E15'];
 
 /** Exercise types implemented in the current phase. The generator never emits others. */
-export const ENABLED_TYPES: Set<ExerciseType> = new Set(['E1', 'E1card', 'E1word', 'E2', 'E3', 'E4', 'E7', 'E11']);
+export const ENABLED_TYPES: Set<ExerciseType> = new Set(ALL_TYPES);
 
 export const PRODUCTION_TYPES: ExerciseType[] = ['E5', 'E6', 'E10'];

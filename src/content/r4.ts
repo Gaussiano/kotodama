@@ -1,5 +1,6 @@
 import { definePhrases, type InfoCard, type LessonNode, type PracticeWord, type Scenario } from './types';
 import { kanaIdsFor, kanaInRows, EXTENDED_ROWS } from './kana';
+import { KANJI } from './kanji';
 
 // Región 4 · El gran viaje (26 oct – 1 nov) — hotel, transporte y ayuda — spec §10.5
 
@@ -84,6 +85,14 @@ export const R4_CARDS: InfoCard[] = [
     ],
   },
   {
+    id: 'r4-c-kanji',
+    regionId: 'r4',
+    type: 'culture',
+    title: 'Kanji de supervivencia',
+    body: 'No hace falta escribirlos: basta reconocerlos en puertas, baños, estaciones y tiendas.',
+    examples: KANJI.map((k) => ({ jp: k.kanji, romaji: k.romaji, es: k.es })),
+  },
+  {
     id: 'r4-c-katakana-ext',
     regionId: 'r4',
     type: 'culture',
@@ -113,11 +122,11 @@ export const R4_WORDS: PracticeWord[] = [
 const K = (rows: string[]) => kanaInRows('katakana', rows);
 
 export const R4_NODES: LessonNode[] = [
-  { id: 'r4-1', regionId: 'r4', title: 'En el hotel', summary: 'Check-in, desayuno, wifi y equipaje. Las horas. Katakana combinado.', kind: 'phrases', phraseIds: ['r4-p1', 'r4-p2', 'r4-p3', 'r4-p4', 'r4-p5', 'r4-p6'], kanaIds: K(['ky', 'sh', 'ch', 'ny', 'hy', 'my', 'ry', 'gy', 'j', 'by', 'py']), infoCardIds: ['r4-g-hours'], recommendedDate: '2026-10-26', dayLabel: 'Lun 26 oct' },
+  { id: 'r4-1', regionId: 'r4', title: 'En el hotel', summary: 'Check-in, desayuno, wifi y equipaje. Las horas. Katakana combinado.', kind: 'phrases', phraseIds: ['r4-p1', 'r4-p2', 'r4-p3', 'r4-p4', 'r4-p5', 'r4-p6'], kanaIds: K(['ky', 'sh', 'ch', 'ny', 'hy', 'my', 'ry', 'gy', 'j', 'by', 'py']), infoCardIds: ['r4-g-hours'], extras: ['clock'], recommendedDate: '2026-10-26', dayLabel: 'Lun 26 oct' },
   { id: 'r4-2', regionId: 'r4', title: '¿Dónde está?', summary: 'Preguntar por sitios y decir adónde quieres ir. Partículas de movimiento. ッ y ー.', kind: 'phrases', phraseIds: ['r4-p7', 'r4-p8', 'r4-p9'], kanaIds: K(EXTENDED_ROWS), infoCardIds: ['r4-g-particles', 'r4-c-katakana-ext'], practiceWordIds: R4_WORDS.map((w) => w.id), recommendedDate: '2026-10-27', dayLabel: 'Mar 27 oct' },
   { id: 'r4-3', regionId: 'r4', title: 'En el tren y en el taxi', summary: '¿Este tren va a…?, el taxi y los billetes. Gramática: ～たい.', kind: 'phrases', phraseIds: ['r4-p10', 'r4-p11', 'r4-p12'], kanaIds: [], infoCardIds: ['r4-g-tai'], recommendedDate: '2026-10-28', dayLabel: 'Mié 28 oct' },
   { id: 'r4-4', regionId: 'r4', title: 'Pedir ayuda', summary: '¿Habla inglés?, repetir, más despacio y las fotos. Fórmulas con て.', kind: 'phrases', phraseIds: ['r4-p13', 'r4-p14', 'r4-p15', 'r4-p16', 'r4-p17'], kanaIds: [], infoCardIds: ['r4-g-te'], recommendedDate: '2026-10-29', dayLabel: 'Mié 28 – Jue 29 oct' },
-  { id: 'r4-5', regionId: 'r4', title: 'Emergencias', summary: 'Perderse, encontrarse mal y pedir ayuda. Kanji de supervivencia.', kind: 'phrases', phraseIds: ['r4-p18', 'r4-p19', 'r4-p20'], kanaIds: [], infoCardIds: [], recommendedDate: '2026-10-29', dayLabel: 'Jue 29 oct' },
+  { id: 'r4-5', regionId: 'r4', title: 'Emergencias', summary: 'Perderse, encontrarse mal y pedir ayuda. Kanji de supervivencia.', kind: 'phrases', phraseIds: ['r4-p18', 'r4-p19', 'r4-p20'], kanaIds: [], infoCardIds: ['r4-c-kanji'], kanjiIds: KANJI.map((k) => k.id), recommendedDate: '2026-10-29', dayLabel: 'Jue 29 oct' },
   { id: 'r4-6', regionId: 'r4', title: 'Lo que te dirán', summary: 'Recepción y megafonía del tren. Escena: llegada al hotel.', kind: 'heard', phraseIds: ['r4-h1', 'r4-h2', 'r4-h3', 'r4-h4', 'r4-h5', 'r4-h6', 'r4-h7'], kanaIds: [], infoCardIds: [], sceneId: 'scene-4', recommendedDate: '2026-10-30', dayLabel: 'Vie 30 oct' },
   { id: 'r4-7', regionId: 'r4', title: 'Repaso general', summary: 'Todo lo que tenga repaso pendiente, de las cuatro regiones.', kind: 'review', phraseIds: [], kanaIds: [], infoCardIds: [], recommendedDate: '2026-10-31', dayLabel: 'Sáb 31 oct' },
   { id: 'r4-boss', regionId: 'r4', title: 'Guardián del gran viaje', summary: 'Hotel, transporte y ayuda, sin tarjetas. Apruebas con un 80 %.', kind: 'boss', phraseIds: [], kanaIds: [], infoCardIds: [], recommendedDate: '2026-10-31', dayLabel: 'Sáb 31 oct' },

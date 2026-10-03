@@ -49,6 +49,7 @@ export function LessonScreen() {
   const answeredCount = useRef(0);
   const reviewCorrect = useRef(0);
   const feedbackIndex = useRef(0);
+  const spoken = useRef<Set<string>>(new Set());
   const startedAt = useRef(Date.now());
   const rng = useMemo(() => mulberry32(seedFromString(`${nodeId}-${Date.now()}`)), [nodeId]);
 
@@ -62,7 +63,13 @@ export function LessonScreen() {
     void ensureVoicesLoaded().then(() => {
       if (cancelled) return;
       const seed = seedFromString(`${node.id}-${Date.now()}`);
-      const p = generateLesson(node, { completedNodes: progress.completedNodes, srs: progress.srs }, seed, { today: localDayKey(), audioAvailable: hasJapaneseVoice() });
+      let p = generateLesson(node, { completedNodes: progress.completedNodes, srs: progress.srs }, seed, { today: localDayKey(), audioAvailable: hasJapaneseVoice() });
+      const only = searchParams.get('only'); // review aid: show only one exercise type
+      if (only) p = { ...p, exercises: p.exercises.filter((e) => e.type === only) };
+      if (p.exercises.length === 0) {
+        navigate('/', { replace: true });
+        return;
+      }
       const items: Record<string, ItemResult> = {};
       for (const ex of p.exercises) if (ex.itemId) items[ex.itemId] = { failed: false, isNew: p.newItemIds.includes(ex.itemId) };
       results.current = items;
@@ -108,6 +115,7 @@ export function LessonScreen() {
         durationSec,
         regionId: node.regionId,
         usedHint: hintUsed,
+        spokenItems: [...spoken.current],
       });
       if (skipExam && passed && kind === 'boss') progress.markRegionComplete(node.regionId);
       const failedItems = Object.entries(results.current).filter(([, r]) => r.failed).map(([id]) => id);
@@ -184,7 +192,10 @@ export function LessonScreen() {
         setAnswer(a);
         setRevealed(true);
         feedbackIndex.current += 1;
-      } else advance(null);
+      } else {
+        if (current.type === 'E10' && a.correct && current.itemId) spoken.current.add(current.itemId);
+        advance(null);
+      }
     },
     [current, advance], // eslint-disable-line react-hooks/exhaustive-deps
   );
@@ -213,7 +224,7 @@ export function LessonScreen() {
   }
 
   const isCard = current.type === 'E1' || current.type === 'E1card' || current.type === 'E1word';
-  const selfCompleting = current.type === 'E7' || current.type === 'E15';
+  const selfCompleting = current.type === 'E7' || current.type === 'E15' || current.type === 'E10';
   const mainLabel = isCard ? (current.type === 'E1' ? 'Lo tengo' : 'Continuar') : revealed ? 'Continuar' : 'Comprobar';
 
   return (

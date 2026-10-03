@@ -25,6 +25,8 @@ export interface LessonOutcome {
   reviewedCorrect?: string[];
   reviewedWrong?: string[];
   usedHint?: boolean;
+  /** Phrases said aloud (E10): +1 mana each, once per phrase and day. */
+  spokenItems?: string[];
 }
 
 export interface Progress {
@@ -44,6 +46,7 @@ export interface Progress {
   /** Count of review exercises answered correctly ever (achievement «100 frases repasadas»). */
   reviewedCount: number;
   lessonsCompleted: number;
+  spokenByDay: Record<DayKey, string[]>;
 }
 
 export interface ProgressStore extends Progress {
@@ -84,6 +87,7 @@ export const EMPTY_PROGRESS: Progress = {
   lastExportAt: null,
   reviewedCount: 0,
   lessonsCompleted: 0,
+  spokenByDay: {},
 };
 
 const PROGRESS_KEYS = Object.keys(EMPTY_PROGRESS) as (keyof Progress)[];
@@ -120,7 +124,11 @@ export const useProgressStore = create<ProgressStore>()(
         const passedBosses = o.passed && o.kind === 'boss' && !s.passedBosses.includes(o.regionId) ? [...s.passedBosses, o.regionId] : s.passedBosses;
 
         const streakRes = o.kind === 'quick' ? { streak: s.streak, extended: false, usedFreeze: false, lost: false } : updateStreak(s.streak, today);
-        const xpByDay = { ...s.xpByDay, [today]: (s.xpByDay[today] ?? 0) + o.xp };
+        const spokenToday = new Set(s.spokenByDay[today] ?? []);
+        const newlySpoken = (o.spokenItems ?? []).filter((id) => !spokenToday.has(id));
+        const xp = o.xp + newlySpoken.length;
+        const spokenByDay = newlySpoken.length ? { [today]: [...spokenToday, ...newlySpoken] } : {};
+        const xpByDay = { ...s.xpByDay, [today]: (s.xpByDay[today] ?? 0) + xp };
         const reviewedCount = s.reviewedCount + (o.reviewedCorrect?.length ?? 0) + Object.values(o.items).filter((r) => !r.isNew && !r.failed).length;
 
         set({
@@ -129,8 +137,9 @@ export const useProgressStore = create<ProgressStore>()(
           completedNodes,
           passedBosses,
           streak: streakRes.streak,
-          xpTotal: s.xpTotal + o.xp,
+          xpTotal: s.xpTotal + xp,
           xpByDay,
+          spokenByDay: { ...s.spokenByDay, ...spokenByDay },
           reviewedCount,
           lessonsCompleted: s.lessonsCompleted + ((o.kind === 'lesson' || o.kind === 'boss' || o.kind === 'finalBoss') && o.passed ? 1 : 0),
         });
@@ -169,7 +178,7 @@ export const useProgressStore = create<ProgressStore>()(
     {
       name: 'kotodama-progress',
       version: 1,
-      migrate: (state) => state as ProgressStore,
+      migrate: (state) => ({ ...EMPTY_PROGRESS, ...(state as Partial<ProgressStore>) }) as ProgressStore,
       partialize: (s) => Object.fromEntries(PROGRESS_KEYS.map((k) => [k, s[k]])) as unknown as ProgressStore,
     },
   ),

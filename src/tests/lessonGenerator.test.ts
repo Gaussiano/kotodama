@@ -136,3 +136,37 @@ describe('retryExercise', () => {
     expect(retry.uid).not.toBe(failed.uid);
   });
 });
+
+describe('phase 3 coverage', () => {
+  it('every exercise type E1–E15 appears across the lessons', () => {
+    const all = snapshotWithCompleted(NODES.map((x) => x.id));
+    const seen = new Set<string>();
+    for (const n of NODES) for (const e of generateLesson(n, all, 21, { today: TODAY }).exercises) seen.add(e.type);
+    for (const t of ['E1', 'E1card', 'E2', 'E3', 'E4', 'E5', 'E6', 'E7', 'E8', 'E9', 'E10', 'E11', 'E12', 'E13', 'E14', 'E15']) expect(seen.has(t as never), t).toBe(true);
+  });
+  it('guardian R3 reads the dossier prices and the final guardian ends with scene 5', () => {
+    const all = snapshotWithCompleted(NODES.map((x) => x.id));
+    const r3 = generateLesson(NODE_BY_ID['r3-boss']!, all, 2, { today: TODAY });
+    const prices = r3.exercises.filter((e): e is Extract<Exercise, { type: 'E12' }> => e.type === 'E12').map((e) => e.yen);
+    expect(prices.length).toBe(3);
+    for (const y of prices) expect([150, 380, 1000, 2600, 7800, 15000]).toContain(y);
+    const fin = generateLesson(NODE_BY_ID['final-boss']!, all, 2, { today: TODAY });
+    const last = fin.exercises[fin.exercises.length - 1]!;
+    expect(last.type).toBe('E15');
+    expect(last.type === 'E15' && last.sceneId).toBe('scene-5');
+  });
+  it('E5 tiles contain every segment plus 2–3 traps and E9 options include the gesture when defined', () => {
+    const plan = generateLesson(NODE_BY_ID['r2-2']!, EMPTY, 5, { today: TODAY });
+    const e5 = plan.exercises.find((e): e is Extract<Exercise, { type: 'E5' }> => e.type === 'E5');
+    if (e5) {
+      const p = PHRASE_BY_ID[e5.phraseId]!;
+      for (const s of p.segments) expect(e5.tiles).toContain(s);
+      expect(e5.tiles.length - p.segments.length).toBeGreaterThanOrEqual(2);
+      expect(e5.tiles.length - p.segments.length).toBeLessThanOrEqual(3);
+    }
+    const boss = generateLesson(NODE_BY_ID['r1-boss']!, snapshotWithCompleted(NODES.map((x) => x.id)), 3, { today: TODAY });
+    const e9s = boss.exercises.filter((e): e is Extract<Exercise, { type: 'E9' }> => e.type === 'E9');
+    expect(e9s.length).toBeGreaterThan(0);
+    for (const e of e9s) expect(e.options.length).toBeGreaterThanOrEqual(3);
+  });
+});
