@@ -13,6 +13,10 @@ import { TravelModeScreen } from './screens/TravelMode';
 import { TalkHubScreen } from './screens/TalkHub';
 import { PronounceScreen } from './screens/Pronounce';
 import { ConversationScreen } from './screens/Conversation';
+import { KanaQuickScreen } from './screens/KanaQuick';
+import { MAP_FLAG } from './screens/TravelMode';
+import { isTravelPeriod } from './domain/calendar';
+import { localDayKey } from './domain/dates';
 import { useSettingsStore } from './store/settingsStore';
 
 function TabLayout() {
@@ -27,6 +31,18 @@ function TabLayout() {
   );
 }
 
+/** From 2 to 16 November the app opens in Modo viaje (spec §11); «Mapa» in travel mode opts out for the session. */
+function Home() {
+  let optOut = false;
+  try {
+    optOut = sessionStorage.getItem(MAP_FLAG) === '1';
+  } catch {
+    /* ignore */
+  }
+  if (isTravelPeriod(localDayKey()) && !optOut) return <Navigate to="/travel" replace />;
+  return <MapScreen />;
+}
+
 function RequireOnboarding() {
   const onboarded = useSettingsStore((s) => s.onboarded);
   if (!onboarded) return <Navigate to="/onboarding" replace />;
@@ -39,7 +55,7 @@ export function AppRoutes() {
       <Route path="/onboarding" element={<OnboardingScreen />} />
       <Route element={<RequireOnboarding />}>
         <Route element={<TabLayout />}>
-          <Route path="/" element={<MapScreen />} />
+          <Route path="/" element={<Home />} />
           <Route path="/review" element={<ReviewScreen />} />
           <Route path="/kana" element={<KanaDojoScreen />} />
           <Route path="/talk" element={<TalkHubScreen />} />
@@ -49,6 +65,7 @@ export function AppRoutes() {
         <Route path="/settings" element={<SettingsScreen />} />
         <Route path="/lesson/:nodeId" element={<LessonScreen />} />
         <Route path="/travel" element={<TravelModeScreen />} />
+        <Route path="/kana/quick" element={<KanaQuickScreen />} />
         <Route path="/talk/pronounce/:topic" element={<PronounceScreen />} />
         <Route path="/talk/conversation/:convId/:level" element={<ConversationScreen />} />
       </Route>

@@ -418,6 +418,15 @@ function interleave(main: Exercise[], reviews: Exercise[]): Exercise[] {
   return out;
 }
 
+/** Standalone kana practice (dojo rows, weakest kana): 10–15 E11/E7 exercises, no hearts, +1 mana per hit. */
+export function generateKanaPractice(kanaIds: string[], seed: number, opts: GenOptions): LessonPlan {
+  const rnd = mulberry32(seed);
+  const enabled = opts.enabledTypes ?? ENABLED_TYPES;
+  uidCounter = 0;
+  const exercises = kanaBlock(kanaIds, rnd, enabled, 15);
+  return { nodeId: 'kana:practice', kind: 'kana', exercises, newItemIds: [], reviewItemIds: kanaIds, usesHearts: false, passThreshold: 0 };
+}
+
 // ─── main entry ─────────────────────────────────────────────────────────────
 
 export function generateLesson(node: LessonNode, snapshot: ProgressSnapshot, seed: number, opts: GenOptions): LessonPlan {

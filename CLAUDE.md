@@ -61,7 +61,7 @@ Vitest + Testing Library · Web Speech API (ja-JP) · Web Audio sfx synthesized 
 - [x] 1 · MVP de estudio — all content, lesson engine, E1/E2/E3/E4/E7/E11, TTS, map, persistence.
 - [x] 2 · Juego — mana, daily goal, streak + amulets, hearts, results, achievements, spell circle, sfx, forest map, Fuku.
 - [x] 3 · Todos los ejercicios — E5, E6, E8, E9, E10, E12, E13, E14, E15, guardians, final guardian, flower field.
-- [ ] 4 · Repaso y viaje — SRS, Repaso, kana dojo, Grimorio, Modo viaje, Perfil.
+- [x] 4 · Repaso y viaje — SRS, Repaso, kana dojo, Grimorio, Modo viaje, Perfil.
 - [ ] 5 · Pulido — a11y, performance, export/import, onboarding, visual review 390×844 and 360×780, Lighthouse ≥ 90.
 
 ## Speaking & conversation layer (user request, added 2026-10-03)

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { NODE_BY_ID, PHRASE_BY_ID, REGION_BY_ID } from '@/content';
 import { generateLesson, retryExercise, type LessonPlan } from '@/domain/lessonGenerator';
+import { buildVirtualPlan, parseVirtualId, virtualNode } from '@/domain/sessions';
 import type { Exercise } from '@/domain/exercises';
 import { mulberry32, seedFromString } from '@/domain/rng';
 import { localDayKey } from '@/domain/dates';
@@ -29,7 +30,8 @@ export function LessonScreen() {
   const [searchParams] = useSearchParams();
   const skipExam = searchParams.get('skip') === '1';
   const navigate = useNavigate();
-  const node = NODE_BY_ID[nodeId];
+  const virtualSpec = parseVirtualId(nodeId);
+  const node = NODE_BY_ID[nodeId] ?? (virtualSpec ? virtualNode(nodeId, virtualSpec) : undefined);
 
   const settings = useSettingsStore();
   const progress = useProgressStore();
@@ -63,7 +65,10 @@ export function LessonScreen() {
     void ensureVoicesLoaded().then(() => {
       if (cancelled) return;
       const seed = seedFromString(`${node.id}-${Date.now()}`);
-      let p = generateLesson(node, { completedNodes: progress.completedNodes, srs: progress.srs }, seed, { today: localDayKey(), audioAvailable: hasJapaneseVoice(), speakingFocus: settings.focus === 'speaking' });
+      const genOpts = { today: localDayKey(), audioAvailable: hasJapaneseVoice(), speakingFocus: settings.focus === 'speaking' };
+      let p = virtualSpec
+        ? buildVirtualPlan(nodeId, { srs: progress.srs, mistakesLog: progress.mistakesLog, completedNodes: progress.completedNodes }, seed, genOpts)!.plan
+        : generateLesson(node, { completedNodes: progress.completedNodes, srs: progress.srs }, seed, genOpts);
       const only = searchParams.get('only'); // review aid: show only one exercise type
       if (only) p = { ...p, exercises: p.exercises.filter((e) => e.type === only) };
       if (p.exercises.length === 0) {
@@ -99,15 +104,20 @@ export function LessonScreen() {
       if (!plan || !node) return;
       const perfect = Object.values(results.current).every((r) => !r.failed) && !hintUsed;
       const accuracy = answeredCount.current ? correctCount.current / answeredCount.current : 1;
-      const kind = node.kind === 'boss' ? 'boss' : node.kind === 'finalBoss' ? 'finalBoss' : node.kind === 'review' ? 'review' : 'lesson';
+      const kind = virtualSpec ? (virtualSpec.kind.startsWith('review') ? 'review' : 'quick') : node.kind === 'boss' ? 'boss' : node.kind === 'finalBoss' ? 'finalBoss' : node.kind === 'review' ? 'review' : 'lesson';
       const passed = plan.passThreshold ? accuracy >= plan.passThreshold : true;
-      const xp = computeXp({ kind, perfect, reviewCorrect: reviewCorrect.current, passed });
+      const xp = computeXp({ kind, perfect, reviewCorrect: kind === 'quick' ? correctCount.current : reviewCorrect.current, passed });
+      const reviewedCorrect = kind === 'review' ? Object.entries(results.current).filter(([, r]) => !r.failed).map(([id]) => id) : undefined;
+      const reviewedWrong = kind === 'review' ? Object.entries(results.current).filter(([, r]) => r.failed).map(([id]) => id) : undefined;
+      if (virtualSpec?.kind === 'review-hearts' && reviewedWrong?.length === 0 && reviewedCorrect?.length) progress.gainHeart(1);
       const durationSec = Math.round((Date.now() - startedAt.current) / 1000);
       const res = progress.finishLesson({
         nodeId: node.id,
         kind,
-        items: results.current,
+        items: kind === 'review' ? {} : results.current,
         newItemIds: plan.newItemIds,
+        reviewedCorrect,
+        reviewedWrong,
         xp,
         perfect,
         accuracy,
@@ -135,10 +145,12 @@ export function LessonScreen() {
         newAchievements: res.newAchievements,
         circleKana: lastPhrase?.kana ?? '言霊',
         skipExam,
+        session: virtualSpec ? (virtualSpec.kind.startsWith('review') ? 'review' : 'kana') : 'lesson',
+        heartRecovered: virtualSpec?.kind === 'review-hearts' && reviewedWrong?.length === 0 && Boolean(reviewedCorrect?.length),
       });
       setStatus('done');
     },
-    [plan, node, progress, hintUsed, skipExam],
+    [plan, node, progress, hintUsed, skipExam, virtualSpec, nodeId],
   );
 
   const advance = useCallback(
