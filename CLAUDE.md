@@ -76,6 +76,13 @@ Vitest + Testing Library · Web Speech API (ja-JP) · Web Audio sfx synthesized 
 - Setting «Enfoque: Hablar más» → generator `speakingFocus`: E10 for every new phrase, E6 replaced by E10.
 - Progress: `talk` (best per level), `pronounce` (best per topic), `pronouncedCount`; achievements Voz clara, Conversador, Narrador.
 
+## Dictionary & furigana (user request, added 2026-10-03)
+- `src/content/dictionary.ts`: readings (hiragana, as used in the phrases) and glosses for every kanji run in the
+  content; `src/tests/dictionary.test.ts` fails if a new kanji run has no reading. `<Furigana>` renders ruby.
+- Progress `dictionary` (entry id → first date): filled automatically from `seenItemIds` of every session (phrases →
+  kanji runs of their kanji form/note, practice words, E14 signs); manual «Guardar en el diccionario» via `KanjiSheet`.
+- Screen `/dictionary` (from Grimorio and Perfil): Kanji | Palabras, search, «Ver todo» to browse unlearned entries.
+
 ## Commands
 ```
 npm run dev      # local dev server

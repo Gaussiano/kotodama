@@ -4,6 +4,7 @@ import type { Exercise } from '@/domain/exercises';
 import { JpText } from '@/components/ui/JpText';
 import { SpeakerButton } from '@/components/ui/SpeakerButton';
 import { Markdown } from '@/components/ui/Markdown';
+import { Furigana } from '@/components/ui/Furigana';
 import { useSpeak } from '@/audio/useSpeak';
 import { useSettingsStore } from '@/store/settingsStore';
 import type { ExerciseProps } from './types';
@@ -28,6 +29,7 @@ export function LearnCard({ exercise, showRomaji }: ExerciseProps<Extract<Exerci
         </JpText>
         {showRomaji && <p className="mt-2 text-base text-ink-2">{p.romaji}</p>}
         <p className="mt-3 text-lg font-bold">{p.es}</p>
+        {p.kanji && p.kanji !== p.kana && <Furigana as="p" text={p.kanji} className="mt-2 text-lg leading-loose text-ink-2" />}
         {p.note && <p className="mt-2 text-sm text-ink-2">{p.note}</p>}
         <div className="mt-4 flex items-center gap-3">
           <SpeakerButton text={p.speech ?? p.kana} fill={fill} />
@@ -78,9 +80,7 @@ export function InfoCardView({ exercise }: ExerciseProps<Extract<Exercise, { typ
               <li key={i} className="flex items-center gap-3 rounded-xl bg-ink/5 px-3 py-2">
                 <SpeakerButton text={ex.jp} size="sm" />
                 <div className="min-w-0">
-                  <JpText as="p" className="text-lg leading-tight">
-                    {ex.jp}
-                  </JpText>
+                  <Furigana as="p" text={ex.jp} className="text-lg leading-snug" />
                   <p className="text-sm text-ink-2">
                     {ex.romaji} · {ex.es}
                   </p>

@@ -126,6 +126,7 @@ export function LessonScreen() {
         regionId: node.regionId,
         usedHint: hintUsed,
         spokenItems: [...spoken.current],
+        seenItemIds: finalQueue.map((e) => e.itemId).filter(Boolean),
       });
       if (skipExam && passed && kind === 'boss') progress.markRegionComplete(node.regionId);
       const failedItems = Object.entries(results.current).filter(([, r]) => r.failed).map(([id]) => id);

@@ -113,6 +113,14 @@ export function ProfileScreen() {
         </div>
       </section>
 
+      <button type="button" className="card mt-3 flex w-full items-center justify-between text-left" onClick={() => navigate('/dictionary')}>
+        <span>
+          <span className="block font-bold">Diccionario</span>
+          <span className="block text-xs text-ink-2">{Object.keys(p.dictionary).filter((k) => k.startsWith('k:')).length} kanji · {Object.keys(p.dictionary).filter((k) => k.startsWith('w:')).length} palabras aprendidas</span>
+        </span>
+        <span className="text-primary">→</span>
+      </button>
+
       <section className="card mt-3">
         <p className="font-bold">Logros</p>
         <ul className="mt-2 grid grid-cols-4 gap-3">

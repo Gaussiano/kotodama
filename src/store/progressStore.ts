@@ -7,6 +7,7 @@ import { gainHeart, loseHeart, MAX_HEARTS, regenHearts, type Hearts } from '@/do
 import { EMPTY_STREAK, updateStreak, type Streak } from '@/domain/streak';
 import { evaluateAchievements } from '@/domain/achievements';
 import { nodesOfRegion } from '@/content';
+import { dictionaryIdsForItem } from '@/content/dictionary';
 
 export interface LessonOutcome {
   nodeId: string;
@@ -33,6 +34,8 @@ export interface LessonOutcome {
   talkResult?: { convId: string; level: 1 | 2 | 3; accuracy: number };
   /** Pronunciation session result. */
   pronounceTopic?: { topic: string; score: number };
+  /** Every SRS item shown in the session: feeds the dictionary. */
+  seenItemIds?: string[];
 }
 
 export interface Progress {
@@ -58,6 +61,8 @@ export interface Progress {
   /** Pronunciation: best average score per topic. */
   pronounce: Record<string, number>;
   pronouncedCount: number;
+  /** Dictionary entry id ('w:<word>' | 'k:<kanji run>') → ISO date first learned. */
+  dictionary: Record<string, string>;
 }
 
 export interface ProgressStore extends Progress {
@@ -80,6 +85,8 @@ export interface ProgressStore extends Progress {
   markRegionComplete: (regionId: RegionId) => void;
   /** Evaluates and stores any newly earned achievements; returns their ids. */
   checkAchievements: (ctx?: { now?: Date; lesson?: LessonOutcome }) => string[];
+  /** Adds dictionary entries (keeps the first date of existing ones). */
+  addToDictionary: (ids: string[], now?: Date) => void;
 }
 
 export const EMPTY_PROGRESS: Progress = {
@@ -102,6 +109,7 @@ export const EMPTY_PROGRESS: Progress = {
   talk: {},
   pronounce: {},
   pronouncedCount: 0,
+  dictionary: {},
 };
 
 const PROGRESS_KEYS = Object.keys(EMPTY_PROGRESS) as (keyof Progress)[];
@@ -144,6 +152,8 @@ export const useProgressStore = create<ProgressStore>()(
           const key = String(o.talkResult.level);
           talk[o.talkResult.convId] = { best: { ...prev, [key]: Math.max(prev[key] ?? 0, o.talkResult.accuracy) } };
         }
+        const dictionary = { ...s.dictionary };
+        for (const itemId of new Set([...(o.seenItemIds ?? []), ...o.newItemIds, ...Object.keys(o.items)])) for (const id of dictionaryIdsForItem(itemId)) if (!dictionary[id]) dictionary[id] = now.toISOString();
         const pronounce = o.pronounceTopic ? { ...s.pronounce, [o.pronounceTopic.topic]: Math.max(s.pronounce[o.pronounceTopic.topic] ?? 0, o.pronounceTopic.score) } : s.pronounce;
         const spokenToday = new Set(s.spokenByDay[today] ?? []);
         const newlySpoken = (o.spokenItems ?? []).filter((id) => !spokenToday.has(id));
@@ -164,6 +174,7 @@ export const useProgressStore = create<ProgressStore>()(
           talk,
           pronounce,
           pronouncedCount: s.pronouncedCount + (o.pronouncedCount ?? 0),
+          dictionary,
           reviewedCount,
           lessonsCompleted: s.lessonsCompleted + ((o.kind === 'lesson' || o.kind === 'boss' || o.kind === 'finalBoss') && o.passed ? 1 : 0),
         });
@@ -178,6 +189,13 @@ export const useProgressStore = create<ProgressStore>()(
             completedNodes: [...new Set([...s.completedNodes, ...ids])],
             passedBosses: s.passedBosses.includes(regionId) ? s.passedBosses : [...s.passedBosses, regionId],
           };
+        }),
+
+      addToDictionary: (ids, now = new Date()) =>
+        set((s) => {
+          const dictionary = { ...s.dictionary };
+          for (const id of ids) if (!dictionary[id]) dictionary[id] = now.toISOString();
+          return { dictionary };
         }),
 
       checkAchievements: (ctx = {}) => {

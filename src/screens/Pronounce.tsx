@@ -83,6 +83,7 @@ export function PronounceScreen() {
         spokenItems: passed,
         pronouncedCount: Object.values(next).filter((r) => r.ok && r.mode === 'stt').length,
         pronounceTopic: { topic, score },
+        seenItemIds: items.map((it) => it.id),
       });
       setDone(true);
     } else setI(i + 1);

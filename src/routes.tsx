@@ -20,6 +20,7 @@ const LessonScreen = lazy(() => import('./screens/Lesson').then((m) => ({ defaul
 const TravelModeScreen = lazy(() => import('./screens/TravelMode').then((m) => ({ default: m.TravelModeScreen })));
 const TalkHubScreen = lazy(() => import('./screens/TalkHub').then((m) => ({ default: m.TalkHubScreen })));
 const PronounceScreen = lazy(() => import('./screens/Pronounce').then((m) => ({ default: m.PronounceScreen })));
+const DictionaryScreen = lazy(() => import('./screens/Dictionary').then((m) => ({ default: m.DictionaryScreen })));
 const ConversationScreen = lazy(() => import('./screens/Conversation').then((m) => ({ default: m.ConversationScreen })));
 
 function Loading() {
@@ -78,6 +79,7 @@ export function AppRoutes() {
           <Route path="/profile" element={<S><ProfileScreen /></S>} />
         </Route>
         <Route path="/settings" element={<S><SettingsScreen /></S>} />
+        <Route path="/dictionary" element={<S><DictionaryScreen /></S>} />
         <Route path="/lesson/:nodeId" element={<S><LessonScreen /></S>} />
         <Route path="/travel" element={<S><TravelModeScreen /></S>} />
         <Route path="/kana/quick" element={<S><KanaQuickScreen /></S>} />

@@ -8,6 +8,7 @@ import { useSettingsStore } from '@/store/settingsStore';
 import { useSpeak } from '@/audio/useSpeak';
 import { JpText } from '@/components/ui/JpText';
 import { Star } from './Grimoire';
+import { Furigana } from '@/components/ui/Furigana';
 
 type TravelCat = Category | 'hear' | 'numbers';
 const CATS: { id: TravelCat; label: string; hint: string }[] = [
@@ -135,6 +136,7 @@ function PhraseList({ phrases, favorites, onFav, onShow, filled, setBlank, empty
               {kana}
             </JpText>
             <p className="text-sm text-ink-2">{fill ? p.romaji.replace(/＿+/g, fill) : p.romaji}</p>
+            {p.kanji && p.kanji !== p.kana && <Furigana as="p" text={fill?.trim() ? p.kanji.replace(/＿+/g, fill.trim()) : p.kanji} className="mt-1 text-lg leading-loose" />}
             <p className="mt-1 font-bold">{fill ? p.es.replace(/＿+/g, fill) : p.es}</p>
             {p.note && <p className="mt-1 text-xs text-ink-2">{p.note}</p>}
             {p.hasBlank && (
@@ -181,9 +183,7 @@ function ShowStaff({ phrase, fill, onClose }: { phrase: Phrase; fill?: string; o
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
       </button>
       <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
-        <JpText as="p" className="text-[3.25rem] font-semibold leading-tight">
-          {text}
-        </JpText>
+        <Furigana as="p" text={text} className="text-[3.25rem] font-semibold leading-[1.6]" />
         <p className="mt-6 text-base text-[#425C50]">{fill ? phrase.es.replace(/＿+/g, fill) : phrase.es}</p>
       </div>
     </div>

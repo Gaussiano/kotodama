@@ -1,4 +1,7 @@
 import type { ReactNode } from 'react';
+import { KANJI_BY_RUN } from '@/content/dictionary';
+
+const JP_RUN = /^[　-ヿ一-鿿！-～]+$/;
 
 /** Minimal markdown for info cards: paragraphs, «- » bullets, **bold**, *italic*. Japanese gets lang="ja". */
 function inline(text: string): ReactNode[] {
@@ -8,7 +11,26 @@ function inline(text: string): ReactNode[] {
     if (part.startsWith('*')) return <em key={i}>{inline(part.slice(1, -1))}</em>;
     // Wrap runs of Japanese in a lang="ja" span so fonts and screen readers switch.
     const chunks = part.split(/([　-ヿ一-鿿！-～]+)/g);
-    return chunks.map((c, j) => (/^[　-ヿ一-鿿！-～]+$/.test(c) ? <span key={`${i}-${j}`} lang="ja" className="font-kana">{c}</span> : c));
+    return chunks.map((c, j) =>
+      JP_RUN.test(c) ? (
+        <span key={`${i}-${j}`} lang="ja" className="font-kana">
+          {c.split(/([一-鿿々]+)/g).map((piece, k) =>
+            KANJI_BY_RUN[piece] ? (
+              <ruby key={k}>
+                {piece}
+                <rp>(</rp>
+                <rt className="text-[0.5em] font-sans">{KANJI_BY_RUN[piece]!.reading}</rt>
+                <rp>)</rp>
+              </ruby>
+            ) : (
+              piece
+            ),
+          )}
+        </span>
+      ) : (
+        c
+      ),
+    );
   });
 }
 

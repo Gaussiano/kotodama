@@ -6,6 +6,8 @@ import { normalizeAnswer } from '@/domain/answerCheck';
 import { useProgressStore } from '@/store/progressStore';
 import { JpText } from '@/components/ui/JpText';
 import { SpeakerButton } from '@/components/ui/SpeakerButton';
+import { Furigana } from '@/components/ui/Furigana';
+import { KanjiSheet } from '@/components/ui/KanjiSheet';
 
 const ORDER: (Category | 'hear')[] = ['basics', 'restaurant', 'shopping', 'hotel', 'transport', 'help', 'hear'];
 
@@ -17,6 +19,7 @@ export function GrimoireScreen() {
   const toggleFavorite = useProgressStore((s) => s.toggleFavorite);
   const [query, setQuery] = useState('');
   const [onlyFav, setOnlyFav] = useState(false);
+  const [sheet, setSheet] = useState<string | null>(null);
 
   const learned = useMemo(() => learnedPhraseIds(completedNodes), [completedNodes]);
   const nodeOf = (p: Phrase) => NODES.find((n) => n.phraseIds.includes(p.id));
@@ -45,9 +48,14 @@ export function GrimoireScreen() {
           {known}/{total} hechizos
         </p>
       </div>
-      <button className="btn-secondary" onClick={() => navigate('/travel')}>
-        Modo viaje: la chuleta para Japón
-      </button>
+      <div className="grid grid-cols-2 gap-2">
+        <button className="btn-secondary" onClick={() => navigate('/travel')}>
+          Modo viaje
+        </button>
+        <button className="btn-secondary" onClick={() => navigate('/dictionary')}>
+          Diccionario
+        </button>
+      </div>
       <div className="mt-3 flex gap-2">
         <input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar en español, romaji o kana" aria-label="Buscar" className="min-h-tap flex-1 rounded-stone border-2 border-line bg-surface px-4 text-base focus:border-primary" />
         <button type="button" aria-pressed={onlyFav} aria-label="Solo favoritos" onClick={() => setOnlyFav(!onlyFav)} className={`flex h-12 w-12 items-center justify-center rounded-stone border-2 ${onlyFav ? 'border-rune-gold bg-rune-gold/15 text-rune-gold' : 'border-line text-ink-2'}`}>
@@ -83,6 +91,7 @@ export function GrimoireScreen() {
                         {p.kana}
                       </JpText>
                       <p className="text-sm opacity-80">{p.romaji}</p>
+                      {p.kanji && p.kanji !== p.kana && <Furigana as="p" text={p.kanji} className="mt-1 text-lg leading-loose" onKanji={setSheet} />}
                       <p className="mt-1 font-bold">{p.es}</p>
                       {p.note && <p className="mt-1 text-xs opacity-80">{p.note}</p>}
                     </div>
@@ -99,6 +108,7 @@ export function GrimoireScreen() {
           </ul>
         </section>
       ))}
+      <KanjiSheet run={sheet} onClose={() => setSheet(null)} />
     </main>
   );
 }

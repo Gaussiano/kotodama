@@ -109,6 +109,7 @@ export function ConversationScreen() {
         durationSec: 0,
         regionId: conv.regionId,
         talkResult: { convId: conv.id, level: lvl, accuracy },
+        seenItemIds: conv.turns.flatMap((t) => (t.correct ?? []).filter((c): c is string => c !== 'gesture')),
       });
       setFinished(true);
     } else setI(i + 1);

@@ -3,6 +3,7 @@ import { KANJI_BY_ID, type KanjiSign } from '@/content';
 import type { Exercise } from '@/domain/exercises';
 import { JpText } from '@/components/ui/JpText';
 import { SpeakerButton } from '@/components/ui/SpeakerButton';
+import { KANJI_BY_RUN } from '@/content/dictionary';
 import { OptionList, type Option } from './OptionList';
 import type { ExerciseProps } from './types';
 
@@ -73,7 +74,7 @@ export function SignExercise({ exercise, revealed, onReady, showRomaji }: Exerci
         <Sign k={k} />
         {(revealed || showRomaji) && revealed && (
           <p className="flex items-center gap-2 text-sm text-ink-2">
-            <SpeakerButton text={k.kanji} size="sm" /> {k.romaji}
+            <SpeakerButton text={KANJI_BY_RUN[k.kanji]?.reading ?? k.kanji} size="sm" /> <JpText>{KANJI_BY_RUN[k.kanji]?.reading}</JpText> · {k.romaji}
           </p>
         )}
       </div>
