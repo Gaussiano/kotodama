@@ -5,31 +5,31 @@ import { kanaIdsFor, kanaInRows } from './kana';
 
 export const R3_SAY = definePhrases('r3', 'shopping', 'say', [
   { id: 'r3-p1', n: 1, kana: 'いくらですか', romaji: 'ikura desu ka', es: '¿Cuánto es?' },
-  { id: 'r3-p2', n: 2, kana: 'これは いくらですか', romaji: 'kore wa ikura desu ka', es: '¿Cuánto cuesta esto?' },
-  { id: 'r3-p3', n: 3, kana: 'これは なんですか', romaji: 'kore wa nan desu ka', es: '¿Qué es esto?', note: 'Imprescindible en el súper.' },
+  { id: 'r3-p2', n: 2, kana: 'これは いくらですか', romaji: 'kore wa ikura desu ka', es: '¿Cuánto cuesta esto?', kanji: 'これは いくらですか' },
+  { id: 'r3-p3', n: 3, kana: 'これは なんですか', romaji: 'kore wa nan desu ka', es: '¿Qué es esto?', note: 'Imprescindible en el súper.', kanji: 'これは 何ですか' },
   { id: 'r3-p4', n: 4, kana: '＿＿は ありますか', romaji: '＿＿ wa arimasu ka', es: '¿Tienen ＿＿?', note: 'Repaso.', equivalents: ['r2-p13'] },
   { id: 'r3-p5', n: 5, kana: 'これを ください', romaji: 'kore o kudasai', es: 'Me llevo esto', note: 'Repaso.', equivalents: ['r2-p8'] },
-  { id: 'r3-p6', n: 6, kana: 'カード、つかえますか', romaji: 'kādo, tsukaemasu ka', es: '¿Se puede pagar con tarjeta?' },
-  { id: 'r3-p7', n: 7, kana: 'げんきんで', romaji: 'genkin de', es: 'En efectivo' },
-  { id: 'r3-p8', n: 8, kana: 'ふくろを ください', romaji: 'fukuro o kudasai', es: 'Una bolsa, por favor', note: 'Las bolsas se cobran aparte.' },
-  { id: 'r3-p9', n: 9, kana: 'ふくろは いりません', romaji: 'fukuro wa irimasen', es: 'No necesito bolsa', note: 'O だいじょうぶです.', equivalents: ['r1-p9'] },
-  { id: 'r3-p10', n: 10, kana: 'あたためて ください', romaji: 'atatamete kudasai', es: 'Caliéntelo, por favor', note: 'En el konbini.' },
-  { id: 'r3-p11', n: 11, kana: 'おはしを ください', romaji: 'o-hashi o kudasai', es: 'Unos palillos, por favor' },
-  { id: 'r3-p12', n: 12, kana: 'みているだけです', romaji: 'mite iru dake desu', es: 'Solo estoy mirando' },
-  { id: 'r3-p13', n: 13, kana: 'しちゃくしても いいですか', romaji: 'shichaku shite mo ii desu ka', es: '¿Me lo puedo probar?' },
-  { id: 'r3-p14', n: 14, kana: 'めんぜいできますか', romaji: 'menzei dekimasu ka', es: '¿Hacen tax-free?', note: 'Ver la tarjeta del tax-free.' },
+  { id: 'r3-p6', n: 6, kana: 'カード、つかえますか', romaji: 'kādo, tsukaemasu ka', es: '¿Se puede pagar con tarjeta?', kanji: 'カード、使えますか' },
+  { id: 'r3-p7', n: 7, kana: 'げんきんで', romaji: 'genkin de', es: 'En efectivo', kanji: '現金で' },
+  { id: 'r3-p8', n: 8, kana: 'ふくろを ください', romaji: 'fukuro o kudasai', es: 'Una bolsa, por favor', note: 'Las bolsas se cobran aparte.', kanji: '袋を ください' },
+  { id: 'r3-p9', n: 9, kana: 'ふくろは いりません', romaji: 'fukuro wa irimasen', es: 'No necesito bolsa', note: 'O だいじょうぶです.', equivalents: ['r1-p9'], kanji: '袋は いりません' },
+  { id: 'r3-p10', n: 10, kana: 'あたためて ください', romaji: 'atatamete kudasai', es: 'Caliéntelo, por favor', note: 'En el konbini.', kanji: '温めて ください' },
+  { id: 'r3-p11', n: 11, kana: 'おはしを ください', romaji: 'o-hashi o kudasai', es: 'Unos palillos, por favor', kanji: 'お箸を ください' },
+  { id: 'r3-p12', n: 12, kana: 'みているだけです', romaji: 'mite iru dake desu', es: 'Solo estoy mirando', kanji: '見ているだけです' },
+  { id: 'r3-p13', n: 13, kana: 'しちゃくしても いいですか', romaji: 'shichaku shite mo ii desu ka', es: '¿Me lo puedo probar?', kanji: '試着しても いいですか' },
+  { id: 'r3-p14', n: 14, kana: 'めんぜいできますか', romaji: 'menzei dekimasu ka', es: '¿Hacen tax-free?', note: 'Ver la tarjeta del tax-free.', kanji: '免税できますか' },
   // Replies listed in the guardian scenarios (spec §10.4). Hidden from the Grimoire list.
-  { id: 'r3-p15', kana: 'はい、おねがいします', romaji: 'hai, onegai shimasu', es: 'Sí, por favor', hidden: true },
+  { id: 'r3-p15', kana: 'はい、おねがいします', romaji: 'hai, onegai shimasu', es: 'Sí, por favor', hidden: true, kanji: 'はい、お願いします' },
   { id: 'r3-p16', kana: 'カードで', romaji: 'kādo de', es: 'Con tarjeta', hidden: true },
 ]);
 
 export const R3_HEAR = definePhrases('r3', 'shopping', 'hear', [
-  { id: 'r3-h1', kana: 'ふくろは ごりようですか', romaji: 'fukuro wa go-riyō desu ka', es: '¿Quiere bolsa?', suggestedReplies: ['r3-p15', 'r3-p9', 'r1-p9'] },
-  { id: 'r3-h2', kana: 'あたためますか', romaji: 'atatamemasu ka', es: '¿Se lo caliento?', suggestedReplies: ['r3-p15', 'r1-p9'] },
-  { id: 'r3-h3', kana: 'おはしは おつけしますか', romaji: 'o-hashi wa o-tsuke shimasu ka', es: '¿Le pongo palillos?', suggestedReplies: ['r3-p15', 'r1-p9'] },
-  { id: 'r3-h4', kana: 'ポイントカードは おもちですか', romaji: 'pointo kādo wa o-mochi desu ka', es: '¿Tiene tarjeta de puntos?', note: 'いいえ.', suggestedReplies: ['r1-p8b'] },
-  { id: 'r3-h5', kana: 'おしはらいは？', romaji: 'o-shiharai wa?', es: '¿Cómo va a pagar?', note: 'カードで / げんきんで.', suggestedReplies: ['r3-p16', 'r3-p7'] },
-  { id: 'r3-h6', kana: '＿＿えんに なります', romaji: '＿＿ en ni narimasu', es: 'Son ＿＿ yenes', suggestedReplies: ['r1-p8a'] },
+  { id: 'r3-h1', kana: 'ふくろは ごりようですか', romaji: 'fukuro wa go-riyō desu ka', es: '¿Quiere bolsa?', suggestedReplies: ['r3-p15', 'r3-p9', 'r1-p9'], kanji: '袋は ご利用ですか' },
+  { id: 'r3-h2', kana: 'あたためますか', romaji: 'atatamemasu ka', es: '¿Se lo caliento?', suggestedReplies: ['r3-p15', 'r1-p9'], kanji: '温めますか' },
+  { id: 'r3-h3', kana: 'おはしは おつけしますか', romaji: 'o-hashi wa o-tsuke shimasu ka', es: '¿Le pongo palillos?', suggestedReplies: ['r3-p15', 'r1-p9'], kanji: 'お箸は お付けしますか' },
+  { id: 'r3-h4', kana: 'ポイントカードは おもちですか', romaji: 'pointo kādo wa o-mochi desu ka', es: '¿Tiene tarjeta de puntos?', note: 'いいえ.', suggestedReplies: ['r1-p8b'], kanji: 'ポイントカードは お持ちですか' },
+  { id: 'r3-h5', kana: 'おしはらいは？', romaji: 'o-shiharai wa?', es: '¿Cómo va a pagar?', note: 'カードで / げんきんで.', suggestedReplies: ['r3-p16', 'r3-p7'], kanji: 'お支払いは？' },
+  { id: 'r3-h6', kana: '＿＿えんに なります', romaji: '＿＿ en ni narimasu', es: 'Son ＿＿ yenes', suggestedReplies: ['r1-p8a'], kanji: '＿＿円に なります' },
 ]);
 
 export const R3_CARDS: InfoCard[] = [

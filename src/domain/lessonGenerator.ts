@@ -35,6 +35,8 @@ export interface GenOptions {
   enabledTypes?: Set<ExerciseType>;
   /** When false, audio-only E4 becomes E2 (spec §12). */
   audioAvailable?: boolean;
+  /** Speaking focus: every new phrase gets an E10 and E6 is replaced by E10. */
+  speakingFocus?: boolean;
 }
 
 export interface LessonPlan {
@@ -512,9 +514,11 @@ function phraseLesson(node: LessonNode, snapshot: ProgressSnapshot, rnd: Rng, en
   }
   const production: Exercise[] = [];
   for (const p of shuffle(phrases, rnd)) {
-    const types = phraseProductionTypes(p, enabled);
-    if (types.length === 0) continue;
-    const built = buildFor(pick(types, rnd), p, rnd, false, audio);
+    const types = phraseProductionTypes(p, enabled).filter((t) => !(opts.speakingFocus && t === 'E6'));
+    if (opts.speakingFocus && p.kind === 'say' && enabled.has('E10')) production.push(e10({ phraseId: p.id }));
+    const rest = opts.speakingFocus ? types.filter((t) => t !== 'E10') : types;
+    if (rest.length === 0) continue;
+    const built = buildFor(pick(rest, rnd), p, rnd, false, audio);
     if (built) production.push(built);
   }
   mix.push(...production);

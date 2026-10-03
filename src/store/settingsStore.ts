@@ -4,6 +4,7 @@ import { persist } from 'zustand/middleware';
 export type ThemeMode = 'system' | 'light' | 'dark';
 export type RomajiMode = 'auto' | 'always' | 'after' | 'never';
 export type VoiceRate = 0.6 | 0.8 | 1.0;
+export type Focus = 'balanced' | 'speaking';
 
 export interface Settings {
   userName: string;
@@ -20,6 +21,8 @@ export interface Settings {
   onboarded: boolean;
   /** The one-time «no Japanese voice» notice was dismissed. */
   voiceNoticeDismissed: boolean;
+  /** 'speaking': every new phrase is also said aloud and typing drills are replaced by speaking. */
+  focus: Focus;
 }
 
 interface SettingsStore extends Settings {
@@ -41,6 +44,7 @@ export const DEFAULT_SETTINGS: Settings = {
   exchangeRate: 170,
   onboarded: false,
   voiceNoticeDismissed: false,
+  focus: 'balanced',
 };
 
 export const useSettingsStore = create<SettingsStore>()(
@@ -53,7 +57,7 @@ export const useSettingsStore = create<SettingsStore>()(
     {
       name: 'kotodama-settings',
       version: 1,
-      migrate: (state) => state as SettingsStore,
+      migrate: (state) => ({ ...DEFAULT_SETTINGS, ...(state as Partial<SettingsStore>) }) as SettingsStore,
       partialize: (s) => {
         const { set: _set, reset: _reset, ...rest } = s;
         return rest;

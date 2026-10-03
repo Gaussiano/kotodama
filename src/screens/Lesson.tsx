@@ -63,7 +63,7 @@ export function LessonScreen() {
     void ensureVoicesLoaded().then(() => {
       if (cancelled) return;
       const seed = seedFromString(`${node.id}-${Date.now()}`);
-      let p = generateLesson(node, { completedNodes: progress.completedNodes, srs: progress.srs }, seed, { today: localDayKey(), audioAvailable: hasJapaneseVoice() });
+      let p = generateLesson(node, { completedNodes: progress.completedNodes, srs: progress.srs }, seed, { today: localDayKey(), audioAvailable: hasJapaneseVoice(), speakingFocus: settings.focus === 'speaking' });
       const only = searchParams.get('only'); // review aid: show only one exercise type
       if (only) p = { ...p, exercises: p.exercises.filter((e) => e.type === only) };
       if (p.exercises.length === 0) {

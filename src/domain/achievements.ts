@@ -28,6 +28,9 @@ export const ACHIEVEMENTS: AchievementDef[] = [
   { id: 'night-owl', title: 'Políglota nocturno', description: 'Una lección después de las 23:00.', tone: 'mana' },
   { id: 'early-bird', title: 'Madrugador', description: 'Una lección antes de las 8:00.', tone: 'gold' },
   { id: 'ready', title: 'Preparado para Japón', description: 'Todo completado antes del 2 de noviembre.', tone: 'gold' },
+  { id: 'clear-voice', title: 'Voz clara', description: '20 frases reconocidas por el micrófono.', tone: 'mana' },
+  { id: 'talker', title: 'Conversador', description: 'Una conversación completa hablando (nivel 2).', tone: 'moss' },
+  { id: 'storyteller', title: 'Narrador', description: 'Una conversación completa escribiendo (nivel 3).', tone: 'gold' },
 ];
 
 export const ACHIEVEMENT_BY_ID: Record<string, AchievementDef> = Object.fromEntries(ACHIEVEMENTS.map((a) => [a.id, a]));
@@ -35,7 +38,7 @@ export const ACHIEVEMENT_BY_ID: Record<string, AchievementDef> = Object.fromEntr
 export interface AchievementContext {
   now: Date;
   /** The session that just finished, if any. */
-  lesson?: { kind: 'lesson' | 'boss' | 'finalBoss' | 'review' | 'quick'; perfect: boolean; passed: boolean };
+  lesson?: { kind: 'lesson' | 'boss' | 'finalBoss' | 'review' | 'quick' | 'talk'; perfect: boolean; passed: boolean };
 }
 
 const hiraganaIds = HIRAGANA.filter((k) => k.group !== 'extended').map((k) => k.id);
@@ -67,5 +70,8 @@ export function evaluateAchievements(p: Progress, ctx: AchievementContext): stri
   earn('night-owl', Boolean(isLesson && hour >= 23));
   earn('early-bird', Boolean(isLesson && hour < 8));
   earn('ready', NODES.every((n) => completed.has(n.id)) && localDayKey(ctx.now) < PLAN.tripStart);
+  earn('clear-voice', p.pronouncedCount >= 20);
+  earn('talker', Object.values(p.talk).some((t) => (t.best['2'] ?? 0) >= 0.8));
+  earn('storyteller', Object.values(p.talk).some((t) => (t.best['3'] ?? 0) >= 0.8));
   return out;
 }

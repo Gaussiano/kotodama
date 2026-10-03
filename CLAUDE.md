@@ -64,6 +64,18 @@ Vitest + Testing Library · Web Speech API (ja-JP) · Web Audio sfx synthesized 
 - [ ] 4 · Repaso y viaje — SRS, Repaso, kana dojo, Grimorio, Modo viaje, Perfil.
 - [ ] 5 · Pulido — a11y, performance, export/import, onboarding, visual review 390×844 and 360×780, Lighthouse ≥ 90.
 
+## Speaking & conversation layer (user request, added 2026-10-03)
+- New tab **Hablar** (6 tabs; the spec listed 5). Routes `/talk`, `/talk/pronounce/:topic`, `/talk/conversation/:convId/:level`.
+- `src/audio/stt.ts` wraps SpeechRecognition (ja-JP, 5 alternatives). `src/domain/pronunciation.ts` scores the heard
+  text against the phrase's kana and kanji forms (katakana folded, punctuation stripped). ≥ 0.72 good, ≥ 0.45 close.
+  No recognizer (Firefox, offline) → self-evaluation fallback in `SpeakCheck`.
+- Every phrase now carries its natural **kanji** form (orthographic variant of the same dossier text, needed because
+  recognizers return kanji and for «Enseñar al personal»). Not new content.
+- Conversations = the 5 dossier scenes + 3 extra (`src/content/conversations.ts`), 3 levels: choose / speak / type.
+  Level n+1 unlocks at ≥ 80 %. Generated NPC lines there: えきは まっすぐ いって、みぎです · まっすぐ、みぎ、です · はい、えきですね.
+- Setting «Enfoque: Hablar más» → generator `speakingFocus`: E10 for every new phrase, E6 replaced by E10.
+- Progress: `talk` (best per level), `pronounce` (best per topic), `pronouncedCount`; achievements Voz clara, Conversador, Narrador.
+
 ## Commands
 ```
 npm run dev      # local dev server

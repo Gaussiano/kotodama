@@ -4,6 +4,7 @@ const tabs = [
   { to: '/', label: 'Mapa', icon: MapIcon },
   { to: '/review', label: 'Repaso', icon: ReviewIcon },
   { to: '/kana', label: 'Kana', icon: KanaIcon },
+  { to: '/talk', label: 'Hablar', icon: TalkIcon },
   { to: '/grimoire', label: 'Grimorio', icon: BookIcon },
   { to: '/profile', label: 'Perfil', icon: ProfileIcon },
 ] as const;
@@ -22,7 +23,7 @@ export function TabBar() {
               to={to}
               end={to === '/'}
               className={({ isActive }) =>
-                `flex min-h-[56px] flex-col items-center justify-center gap-0.5 text-xs font-semibold ${
+                `flex min-h-[56px] flex-col items-center justify-center gap-0.5 text-[11px] font-semibold ${
                   isActive ? 'text-primary' : 'text-ink-2'
                 }`
               }
@@ -71,6 +72,14 @@ function KanaIcon({ active }: IconProps) {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" {...stroke(active)}>
       <path d="M5 8c3 0 7-1 10-3M9 5c0 6-1 11-5 15M11 11c4 2 6 5 7 9M13 14c2-1 4-1 6 0" />
+    </svg>
+  );
+}
+function TalkIcon({ active }: IconProps) {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" {...stroke(active)}>
+      <rect x="9" y="3" width="6" height="11" rx="3" fill={active ? 'currentColor' : 'none'} />
+      <path d="M5 11a7 7 0 0 0 14 0M12 18v3M9 21h6" />
     </svg>
   );
 }

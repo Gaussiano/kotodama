@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSettingsStore, type RomajiMode, type ThemeMode, type VoiceRate } from '@/store/settingsStore';
+import { useSettingsStore, type Focus, type RomajiMode, type ThemeMode, type VoiceRate } from '@/store/settingsStore';
 import { isValidProgress, progressSnapshot, useProgressStore, type Progress } from '@/store/progressStore';
 import { ensureVoicesLoaded, getJapaneseVoices, speak } from '@/audio/tts';
 import { localDayKey } from '@/domain/dates';
@@ -114,6 +114,11 @@ export function SettingsScreen() {
             Probar
           </button>
         </div>
+      </Section>
+
+      <Section title="Enfoque de las lecciones">
+        <Segmented<Focus> options={[{ value: 'balanced', label: 'Equilibrado' }, { value: 'speaking', label: 'Hablar más' }]} value={s.focus} onChange={(v) => s.set({ focus: v })} />
+        <p className="mt-1 text-xs text-ink-2">«Hablar más»: dices cada frase nueva en voz alta (el micro la comprueba) y se sustituyen los ejercicios de escribir por los de hablar.</p>
       </Section>
 
       <Section title="Juego">

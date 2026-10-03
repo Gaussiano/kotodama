@@ -10,7 +10,7 @@ import { nodesOfRegion } from '@/content';
 
 export interface LessonOutcome {
   nodeId: string;
-  kind: 'lesson' | 'boss' | 'finalBoss' | 'review' | 'quick';
+  kind: 'lesson' | 'boss' | 'finalBoss' | 'review' | 'quick' | 'talk';
   /** Every SRS item presented (new or review) with whether it was ever failed in the session. */
   items: Record<string, { failed: boolean; isNew: boolean }>;
   /** Items the lesson introduced (go to box 1 if not already tracked). */
@@ -27,6 +27,12 @@ export interface LessonOutcome {
   usedHint?: boolean;
   /** Phrases said aloud (E10): +1 mana each, once per phrase and day. */
   spokenItems?: string[];
+  /** Phrases recognised by the microphone in this session (achievement «Voz clara»). */
+  pronouncedCount?: number;
+  /** Conversation level result. */
+  talkResult?: { convId: string; level: 1 | 2 | 3; accuracy: number };
+  /** Pronunciation session result. */
+  pronounceTopic?: { topic: string; score: number };
 }
 
 export interface Progress {
@@ -47,6 +53,11 @@ export interface Progress {
   reviewedCount: number;
   lessonsCompleted: number;
   spokenByDay: Record<DayKey, string[]>;
+  /** Conversations: best accuracy per level ('1' | '2' | '3'). */
+  talk: Record<string, { best: Record<string, number> }>;
+  /** Pronunciation: best average score per topic. */
+  pronounce: Record<string, number>;
+  pronouncedCount: number;
 }
 
 export interface ProgressStore extends Progress {
@@ -88,6 +99,9 @@ export const EMPTY_PROGRESS: Progress = {
   reviewedCount: 0,
   lessonsCompleted: 0,
   spokenByDay: {},
+  talk: {},
+  pronounce: {},
+  pronouncedCount: 0,
 };
 
 const PROGRESS_KEYS = Object.keys(EMPTY_PROGRESS) as (keyof Progress)[];
@@ -124,6 +138,13 @@ export const useProgressStore = create<ProgressStore>()(
         const passedBosses = o.passed && o.kind === 'boss' && !s.passedBosses.includes(o.regionId) ? [...s.passedBosses, o.regionId] : s.passedBosses;
 
         const streakRes = o.kind === 'quick' ? { streak: s.streak, extended: false, usedFreeze: false, lost: false } : updateStreak(s.streak, today);
+        const talk = { ...s.talk };
+        if (o.talkResult) {
+          const prev = talk[o.talkResult.convId]?.best ?? {};
+          const key = String(o.talkResult.level);
+          talk[o.talkResult.convId] = { best: { ...prev, [key]: Math.max(prev[key] ?? 0, o.talkResult.accuracy) } };
+        }
+        const pronounce = o.pronounceTopic ? { ...s.pronounce, [o.pronounceTopic.topic]: Math.max(s.pronounce[o.pronounceTopic.topic] ?? 0, o.pronounceTopic.score) } : s.pronounce;
         const spokenToday = new Set(s.spokenByDay[today] ?? []);
         const newlySpoken = (o.spokenItems ?? []).filter((id) => !spokenToday.has(id));
         const xp = o.xp + newlySpoken.length;
@@ -140,6 +161,9 @@ export const useProgressStore = create<ProgressStore>()(
           xpTotal: s.xpTotal + xp,
           xpByDay,
           spokenByDay: { ...s.spokenByDay, ...spokenByDay },
+          talk,
+          pronounce,
+          pronouncedCount: s.pronouncedCount + (o.pronouncedCount ?? 0),
           reviewedCount,
           lessonsCompleted: s.lessonsCompleted + ((o.kind === 'lesson' || o.kind === 'boss' || o.kind === 'finalBoss') && o.passed ? 1 : 0),
         });

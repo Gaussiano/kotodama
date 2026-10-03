@@ -15,23 +15,23 @@ export const R1_SAY = definePhrases('r1', 'basics', 'say', [
   { id: 'r1-p8a', kana: 'はい', romaji: 'hai', es: 'Sí', hidden: true },
   { id: 'r1-p8b', kana: 'いいえ', romaji: 'iie', es: 'No', hidden: true },
   { id: 'r1-p9', n: 9, kana: 'だいじょうぶです', romaji: 'daijōbu desu', es: 'Estoy bien / no hace falta, gracias', note: 'Para rechazar con educación.', kanji: '大丈夫です' },
-  { id: 'r1-p10', n: 10, kana: 'おねがいします', romaji: 'onegai shimasu', es: 'Por favor (te lo pido)', note: 'Va detrás de lo que quieres.' },
+  { id: 'r1-p10', n: 10, kana: 'おねがいします', romaji: 'onegai shimasu', es: 'Por favor (te lo pido)', note: 'Va detrás de lo que quieres.', kanji: 'お願いします' },
   { id: 'r1-p11', n: 11, kana: 'どうぞ', romaji: 'dōzo', es: 'Adelante / tome / usted primero' },
   { id: 'r1-p12', n: 12, kana: 'はじめまして', romaji: 'hajimemashite', es: 'Encantado/a', note: 'Solo la primera vez que conoces a alguien.' },
-  { id: 'r1-p13', n: 13, kana: 'わたしは ＿＿ です', romaji: 'watashi wa ＿＿ desu', es: 'Soy ＿＿ / me llamo ＿＿', note: 'El hueco se rellena con tu nombre.' },
-  { id: 'r1-p14', n: 14, kana: 'スペインから きました', romaji: 'Supein kara kimashita', es: 'Vengo de España' },
-  { id: 'r1-p15', n: 15, kana: 'わかりません', romaji: 'wakarimasen', es: 'No entiendo' },
-  { id: 'r1-p16', n: 16, kana: 'にほんごは すこしだけです', romaji: 'nihongo wa sukoshi dake desu', es: 'Solo hablo un poco de japonés', note: 'Hace que te hablen más despacio.' },
-  { id: 'r1-p17', n: 17, kana: 'しつれいします', romaji: 'shitsurei shimasu', es: 'Con permiso', note: 'Al entrar o salir de un sitio o pasar por delante de alguien.' },
+  { id: 'r1-p13', n: 13, kana: 'わたしは ＿＿ です', romaji: 'watashi wa ＿＿ desu', es: 'Soy ＿＿ / me llamo ＿＿', note: 'El hueco se rellena con tu nombre.', kanji: '私は ＿＿ です' },
+  { id: 'r1-p14', n: 14, kana: 'スペインから きました', romaji: 'Supein kara kimashita', es: 'Vengo de España', kanji: 'スペインから 来ました' },
+  { id: 'r1-p15', n: 15, kana: 'わかりません', romaji: 'wakarimasen', es: 'No entiendo', kanji: '分かりません' },
+  { id: 'r1-p16', n: 16, kana: 'にほんごは すこしだけです', romaji: 'nihongo wa sukoshi dake desu', es: 'Solo hablo un poco de japonés', note: 'Hace que te hablen más despacio.', kanji: '日本語は 少しだけです' },
+  { id: 'r1-p17', n: 17, kana: 'しつれいします', romaji: 'shitsurei shimasu', es: 'Con permiso', note: 'Al entrar o salir de un sitio o pasar por delante de alguien.', kanji: '失礼します' },
   // Combination used by the guardian scenarios (spec §10.2, escenario 3). Hidden from the Grimoire list.
-  { id: 'r1-p18', kana: 'すみません、わかりません', romaji: 'sumimasen, wakarimasen', es: 'Perdone, no entiendo', hidden: true },
+  { id: 'r1-p18', kana: 'すみません、わかりません', romaji: 'sumimasen, wakarimasen', es: 'Perdone, no entiendo', hidden: true, kanji: 'すみません、分かりません' },
 ]);
 
 export const R1_HEAR = definePhrases('r1', 'basics', 'hear', [
   { id: 'r1-h1', kana: 'いらっしゃいませ', romaji: 'irasshaimase', es: '¡Bienvenido!', note: 'No hay que contestar: basta un gesto con la cabeza.', suggestedReplies: [] },
   { id: 'r1-h2', kana: 'ありがとうございました', romaji: 'arigatō gozaimashita', es: 'Gracias (por haber venido)', note: 'Al salir de la tienda.', suggestedReplies: ['r1-p5'] },
   { id: 'r1-h3', kana: 'どういたしまして', romaji: 'dō itashimashite', es: 'De nada', note: 'Suelen responder con いえいえ (iie iie).', suggestedReplies: [] },
-  { id: 'r1-h4', kana: 'おきを つけて', romaji: 'o-ki o tsukete', es: '¡Cuídate! / ¡Buen viaje!', note: 'Se lo dicen a quien se marcha.', suggestedReplies: ['r1-p4'] },
+  { id: 'r1-h4', kana: 'おきを つけて', romaji: 'o-ki o tsukete', es: '¡Cuídate! / ¡Buen viaje!', note: 'Se lo dicen a quien se marcha.', suggestedReplies: ['r1-p4'], kanji: 'お気を つけて' },
 ]);
 
 export const R1_CARDS: InfoCard[] = [

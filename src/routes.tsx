@@ -10,6 +10,9 @@ import { SettingsScreen } from './screens/Settings';
 import { OnboardingScreen } from './screens/Onboarding';
 import { LessonScreen } from './screens/Lesson';
 import { TravelModeScreen } from './screens/TravelMode';
+import { TalkHubScreen } from './screens/TalkHub';
+import { PronounceScreen } from './screens/Pronounce';
+import { ConversationScreen } from './screens/Conversation';
 import { useSettingsStore } from './store/settingsStore';
 
 function TabLayout() {
@@ -39,12 +42,15 @@ export function AppRoutes() {
           <Route path="/" element={<MapScreen />} />
           <Route path="/review" element={<ReviewScreen />} />
           <Route path="/kana" element={<KanaDojoScreen />} />
+          <Route path="/talk" element={<TalkHubScreen />} />
           <Route path="/grimoire" element={<GrimoireScreen />} />
           <Route path="/profile" element={<ProfileScreen />} />
         </Route>
         <Route path="/settings" element={<SettingsScreen />} />
         <Route path="/lesson/:nodeId" element={<LessonScreen />} />
         <Route path="/travel" element={<TravelModeScreen />} />
+        <Route path="/talk/pronounce/:topic" element={<PronounceScreen />} />
+        <Route path="/talk/conversation/:convId/:level" element={<ConversationScreen />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
