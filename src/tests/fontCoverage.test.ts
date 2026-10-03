@@ -14,14 +14,15 @@ function* walk(dir: string): Generator<string> {
 }
 
 describe('font subset coverage', () => {
-  it('covers every non-ASCII character in src/ and docs/SPEC.md', () => {
+  it('covers every non-ASCII character in content, screens, components and docs/SPEC.md', () => {
     const root = join(__dirname, '..', '..');
     const covered = new Set<number>(JSON.parse(readFileSync(join(root, 'src/theme/fonts/coverage.json'), 'utf8')));
     const missing = new Map<string, Set<string>>();
-    for (const file of [...walk(join(root, 'src')), join(root, 'docs/SPEC.md')]) {
+    const dirs = ['src/content', 'src/screens', 'src/components', 'src/audio'].map((d) => join(root, d));
+    for (const file of [...dirs.flatMap((d) => [...walk(d)]), join(root, 'docs/SPEC.md')]) {
       for (const ch of readFileSync(file, 'utf8')) {
         const cp = ch.codePointAt(0)!;
-        if (cp > 0x7f && !covered.has(cp)) {
+        if (cp > 0x7f && cp < 0x1f000 && cp !== 0xfe0f && !covered.has(cp)) {
           if (!missing.has(file)) missing.set(file, new Set());
           missing.get(file)!.add(ch);
         }

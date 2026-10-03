@@ -44,11 +44,21 @@ Vitest + Testing Library · Web Speech API (ja-JP) · Web Audio sfx synthesized 
   glyphs used (kana blocks + every non-ASCII char in `src/` and `docs/SPEC.md`) and committed in `src/theme/fonts/`.
   `src/tests/fontCoverage.test.ts` fails if content uses a glyph outside the subset: re-run the script.
   Nunito stays on @fontsource (latin subsets only) via `scripts/fonts.mjs` (runs in `prebuild`).
-- **Extra dev dependency:** `sharp` only to render the PNG icons from `public/icons/icon.svg` (`npm run icons`).
+- **Extra dev dependencies:** `sharp` only to render the PNG icons (`npm run icons`); `playwright` only for the visual
+  review script `node scripts/shots.mjs` (390×844, both themes, output in `screenshots/`, gitignored).
+- **Lesson length:** E1 cards do not count toward the 12-exercise target; nodes with kana rows add a kana block, so
+  phrase lessons land at 12–18 evaluated exercises. Lessons are padded with recognition rounds when a node has few phrases.
+- **SRS inside lessons:** an item moves at most one box per lesson (promoted if never failed, demoted on any failure);
+  the Repaso screen promotes/demotes per answer.
+- **Hidden phrases:** entries split out of a dossier line (はい / いいえ) or lifted from notes (まだです, はい、おねがいします,
+  カードで, すみません、わかりません) are `hidden: true`: usable as answers/options, not listed in the Grimoire.
+- **Generated Japanese (for review, spec §19.4):** only NPC lines in scenes, each marked `generated: true` in
+  `src/content/scenes.ts`: なにか おさがしですか · まっすぐ いって、ひだりです · はい、いきますよ。つぎの でんしゃも いきます ·
+  はい、かしこまりました.
 
 ## Phases (spec §17) — status
-- [ ] 0 · Base — Vite + TS + Tailwind + Zustand + PWA, tokens, fonts, themes, deploy workflow.
-- [ ] 1 · MVP de estudio — all content, lesson engine, E1/E2/E3/E4/E7/E11, TTS, map, persistence.
+- [x] 0 · Base — Vite + TS + Tailwind + Zustand + PWA, tokens, fonts, themes, deploy workflow.
+- [x] 1 · MVP de estudio — all content, lesson engine, E1/E2/E3/E4/E7/E11, TTS, map, persistence.
 - [ ] 2 · Juego — mana, daily goal, streak + amulets, hearts, results, achievements, spell circle, sfx, forest map, Fuku.
 - [ ] 3 · Todos los ejercicios — E5, E6, E8, E9, E10, E12, E13, E14, E15, guardians, final guardian, flower field.
 - [ ] 4 · Repaso y viaje — SRS, Repaso, kana dojo, Grimorio, Modo viaje, Perfil.
