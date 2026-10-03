@@ -92,7 +92,7 @@ export function KanaQuickScreen() {
         <button type="button" aria-label="Salir" className="flex h-12 w-12 items-center justify-center rounded-full text-ink-2" onClick={() => navigate('/kana')}>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
         </button>
-        <p className={`text-2xl font-extrabold tabular-nums ${left <= 10 ? 'text-ember-500' : ''}`} aria-live="polite">
+        <p className={`text-2xl font-extrabold tabular-nums ${left <= 10 ? 'text-ember-500' : ''}`} role="timer" aria-live="off">
           {left}s
         </p>
         <p className="text-sm font-bold text-rune-gold">+{hits}</p>

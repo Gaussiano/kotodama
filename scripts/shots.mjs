@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const dist = join(root, 'dist');
-const out = join(root, 'screenshots');
+const out = join(root, 'screenshots', process.env.SHOT_WIDTH ? 'w' + process.env.SHOT_WIDTH : '');
 await mkdir(out, { recursive: true });
 
 const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.json': 'application/json', '.webmanifest': 'application/manifest+json' };
@@ -38,7 +38,7 @@ const steps = JSON.parse(process.env.SHOTS ?? 'null') ?? [
 ];
 
 for (const scheme of ['light', 'dark']) {
-  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, colorScheme: scheme, locale: 'es-ES' });
+  const ctx = await browser.newContext({ viewport: { width: Number(process.env.SHOT_WIDTH ?? 390), height: Number(process.env.SHOT_HEIGHT ?? 844) }, deviceScaleFactor: 2, colorScheme: scheme, locale: 'es-ES' });
   const page = await ctx.newPage();
   page.on('pageerror', (e) => console.error(`[${scheme}] page error:`, e.message));
   page.on('console', (m) => m.type() === 'error' && console.error(`[${scheme}] console:`, m.text()));

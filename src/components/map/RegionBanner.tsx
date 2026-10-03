@@ -14,7 +14,8 @@ export function RegionBanner({ region, done, total, canSkip, onSkip }: Props) {
           </p>
         </div>
         <div className="flex shrink-0 flex-col items-end gap-1">
-          <p className="text-sm font-bold" aria-label={`Progreso ${done} de ${total}`}>
+          <p className="text-sm font-bold">
+            <span className="sr-only">Progreso </span>
             {done}/{total}
           </p>
           {canSkip && (

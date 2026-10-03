@@ -40,6 +40,7 @@ export function BuildExercise({ exercise, revealed, onReady, showRomaji }: Exerc
       <p className="text-lg font-bold">{p.es}</p>
       <div
         className={`flex min-h-[4.5rem] flex-wrap items-center gap-2 rounded-stone border-2 border-dashed px-3 py-2 ${revealed ? 'border-line' : 'border-primary/40'}`}
+        role="group"
         aria-label="Tu frase"
       >
         {placed.length === 0 && <span className="text-sm text-ink-2">Toca las fichas en orden</span>}
@@ -49,7 +50,7 @@ export function BuildExercise({ exercise, revealed, onReady, showRomaji }: Exerc
           </button>
         ))}
       </div>
-      <div className="flex flex-wrap gap-2" aria-label="Fichas">
+      <div className="flex flex-wrap gap-2" role="group" aria-label="Fichas">
         {exercise.tiles.map((t, i) => {
           const used = placed.includes(i);
           return (

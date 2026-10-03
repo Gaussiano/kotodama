@@ -22,7 +22,7 @@ export function OnboardingScreen() {
 
   return (
     <main className="screen flex min-h-dvh flex-col py-8">
-      <div className="flex items-center justify-center gap-1" aria-label={`Paso ${step + 1} de 3`}>
+      <div className="flex items-center justify-center gap-1" role="group" aria-label={`Paso ${step + 1} de 3`}>
         {[0, 1, 2].map((i) => (
           <span key={i} className={`h-1.5 w-8 rounded-full ${i <= step ? 'bg-primary' : 'bg-ink/15'}`} />
         ))}

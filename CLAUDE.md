@@ -62,7 +62,7 @@ Vitest + Testing Library · Web Speech API (ja-JP) · Web Audio sfx synthesized 
 - [x] 2 · Juego — mana, daily goal, streak + amulets, hearts, results, achievements, spell circle, sfx, forest map, Fuku.
 - [x] 3 · Todos los ejercicios — E5, E6, E8, E9, E10, E12, E13, E14, E15, guardians, final guardian, flower field.
 - [x] 4 · Repaso y viaje — SRS, Repaso, kana dojo, Grimorio, Modo viaje, Perfil.
-- [ ] 5 · Pulido — a11y, performance, export/import, onboarding, visual review 390×844 and 360×780, Lighthouse ≥ 90.
+- [x] 5 · Pulido — a11y, performance, export/import, onboarding, visual review 390×844 and 360×780, Lighthouse ≥ 90.
 
 ## Speaking & conversation layer (user request, added 2026-10-03)
 - New tab **Hablar** (6 tabs; the spec listed 5). Routes `/talk`, `/talk/pronounce/:topic`, `/talk/conversation/:convId/:level`.

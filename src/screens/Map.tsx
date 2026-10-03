@@ -15,7 +15,7 @@ import { Fuku } from '@/components/mascot/Fuku';
 import { ensureVoicesLoaded, hasJapaneseVoice } from '@/audio/tts';
 import { useSfx } from '@/audio/useSfx';
 
-const BLOOM_KEY = 'kotodama-bloom';
+import { BLOOM_KEY } from './bloomFlag';
 
 export function MapScreen() {
   const navigate = useNavigate();
@@ -136,4 +136,3 @@ function describeNode(n: LessonNode): string {
   return parts.join(' · ');
 }
 
-export { BLOOM_KEY };

@@ -13,7 +13,7 @@ import { useProgressStore } from '@/store/progressStore';
 import { useSettingsStore } from '@/store/settingsStore';
 import { localDayKey } from '@/domain/dates';
 import { useSfx } from '@/audio/useSfx';
-import { BLOOM_KEY } from './Map';
+import { BLOOM_KEY } from './bloomFlag';
 
 export interface LessonSummary {
   node: LessonNode;

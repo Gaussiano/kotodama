@@ -21,10 +21,10 @@ export function TopBar() {
     <header className="sticky top-0 z-20 border-b border-line bg-bg/95 backdrop-blur" style={{ paddingTop: 'var(--safe-top)' }}>
       <div className="mx-auto flex max-w-app items-center justify-between px-4 py-1.5">
         <div className="flex items-center gap-4 text-sm font-bold">
-          <span className="flex items-center gap-1" title="Racha" aria-label={`Racha: ${days} días`}>
+          <span className="flex items-center gap-1" title="Racha" role="img" aria-label={`Racha: ${days} días`}>
             <FlameIcon lit={days > 0} /> {days}
           </span>
-          <span className="flex items-center gap-1 text-mana-500" title="Maná: tu experiencia" aria-label={`Maná: ${xpTotal}`}>
+          <span className="flex items-center gap-1 text-mana-500" title="Maná: tu experiencia" role="img" aria-label={`Maná: ${xpTotal}`}>
             <GemIcon /> {xpTotal}
           </span>
           {heartsEnabled ? <HeartBar count={hearts} compact /> : <span className="text-xs font-semibold text-ink-2">Modo sereno</span>}

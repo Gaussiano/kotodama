@@ -21,7 +21,7 @@ const CATS: { id: TravelCat; label: string; hint: string }[] = [
   { id: 'numbers', label: 'Números y precios', hint: 'Calculadora de yenes' },
 ];
 
-export const MAP_FLAG = 'kotodama-map';
+import { MAP_FLAG } from './travelFlag';
 
 /** Modo viaje (spec §11): the offline cheat sheet, default home screen from 2 to 16 November. */
 export function TravelModeScreen() {
