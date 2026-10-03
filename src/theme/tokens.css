@@ -1,0 +1,111 @@
+/* Kotodama design tokens — spec §3.2. Values are RGB triplets so Tailwind can apply alpha. */
+:root {
+  --c-forest-900: 14 36 25;     /* #0E2419 */
+  --c-forest-700: 29 92 72;     /* #1D5C48 */
+  --c-moss-500: 94 140 58;      /* #5E8C3A */
+  --c-leaf-300: 167 198 107;    /* #A7C66B */
+  --c-mist-50: 233 240 230;     /* #E9F0E6 */
+  --c-parchment-100: 243 234 211; /* #F3EAD3 */
+  --c-bark-600: 107 79 53;      /* #6B4F35 */
+  --c-rune-gold: 201 161 59;    /* #C9A13B */
+  --c-mana-500: 124 108 224;    /* #7C6CE0 */
+  --c-spell-glow: 159 240 228;  /* #9FF0E4 */
+  --c-ember-500: 194 73 59;     /* #C2493B */
+
+  --c-region-r0: 107 90 42;     /* #6B5A2A */
+  --c-region-r1: 29 92 72;      /* #1D5C48 */
+  --c-region-r2: 122 59 46;     /* #7A3B2E */
+  --c-region-r3: 79 63 134;     /* #4F3F86 */
+  --c-region-r4: 43 79 114;     /* #2B4F72 */
+
+  /* Day · «Bosque al amanecer» */
+  --c-bg: 233 240 230;          /* mist-50 */
+  --c-surface: 252 253 251;
+  --c-elevated: 255 255 255;
+  --c-ink: 14 36 25;            /* forest-900 */
+  --c-ink-2: 66 92 80;          /* #425C50 · 6.1:1 on mist-50 */
+  --c-primary: 29 92 72;        /* forest-700 */
+  --c-on-primary: 255 255 255;
+  --c-line: 200 214 200;
+
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --tap: 48px;
+
+  color-scheme: light;
+}
+
+/* Night · «Bosque bajo las estrellas» */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --c-bg: 14 36 25;           /* #0E2419 */
+    --c-surface: 22 54 40;      /* #163628 */
+    --c-elevated: 31 68 51;     /* #1F4433 */
+    --c-ink: 233 240 230;       /* #E9F0E6 */
+    --c-ink-2: 169 191 178;     /* #A9BFB2 */
+    --c-primary: 167 198 107;   /* leaf-300 */
+    --c-on-primary: 14 36 25;
+    --c-line: 46 84 66;
+    color-scheme: dark;
+  }
+}
+:root[data-theme='dark'] {
+  --c-bg: 14 36 25;
+  --c-surface: 22 54 40;
+  --c-elevated: 31 68 51;
+  --c-ink: 233 240 230;
+  --c-ink-2: 169 191 178;
+  --c-primary: 167 198 107;
+  --c-on-primary: 14 36 25;
+  --c-line: 46 84 66;
+  color-scheme: dark;
+}
+
+html,
+body {
+  margin: 0;
+  background: rgb(var(--c-bg));
+  color: rgb(var(--c-ink));
+  font-family: 'Nunito', 'M PLUS Rounded 1c', system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+}
+
+#root {
+  min-height: 100dvh;
+}
+
+[lang='ja'] {
+  font-family: 'M PLUS Rounded 1c', 'Nunito', sans-serif;
+}
+
+/* Learnable kana and phrases use the pencil-like Klee One. */
+.font-kana[lang='ja'] {
+  font-family: 'Klee One', 'M PLUS Rounded 1c', serif;
+}
+
+:focus-visible {
+  outline: 3px solid rgb(var(--c-spell-glow));
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+:root[data-motion='reduced'] *,
+:root[data-motion='reduced'] *::before,
+:root[data-motion='reduced'] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}

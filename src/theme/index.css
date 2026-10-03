@@ -1,0 +1,21 @@
+@import './tokens.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .btn-primary {
+    @apply min-h-tap w-full rounded-stone bg-primary px-5 font-sans text-base font-bold text-on-primary active:brightness-95 disabled:opacity-40;
+  }
+  .btn-secondary {
+    @apply min-h-tap w-full rounded-stone border-2 border-primary bg-transparent px-5 font-sans text-base font-bold text-primary active:bg-primary/10 disabled:opacity-40;
+  }
+  .card {
+    @apply rounded-stone bg-surface p-4 shadow-card;
+  }
+  .screen {
+    @apply mx-auto w-full max-w-app px-4;
+    padding-top: calc(var(--safe-top) + 0.5rem);
+  }
+}

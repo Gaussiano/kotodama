@@ -1,0 +1,60 @@
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+
+export type ThemeMode = 'system' | 'light' | 'dark';
+export type RomajiMode = 'auto' | 'always' | 'after' | 'never';
+export type VoiceRate = 0.6 | 0.8 | 1.0;
+
+export interface Settings {
+  userName: string;
+  dailyGoal: 10 | 20 | 30 | 50;
+  romajiMode: RomajiMode;
+  voiceURI: string | null;
+  voiceRate: VoiceRate;
+  sfx: boolean;
+  vibration: boolean;
+  heartsEnabled: boolean; // false = «Modo sereno»
+  theme: ThemeMode;
+  reducedMotion: boolean;
+  exchangeRate: number; // JPY per 1 EUR
+  onboarded: boolean;
+}
+
+interface SettingsStore extends Settings {
+  set: (patch: Partial<Settings>) => void;
+  reset: () => void;
+}
+
+export const DEFAULT_SETTINGS: Settings = {
+  userName: 'Alex',
+  dailyGoal: 20,
+  romajiMode: 'auto',
+  voiceURI: null,
+  voiceRate: 1.0,
+  sfx: true,
+  vibration: true,
+  heartsEnabled: true,
+  theme: 'system',
+  reducedMotion: false,
+  exchangeRate: 170,
+  onboarded: false,
+};
+
+export const useSettingsStore = create<SettingsStore>()(
+  persist(
+    (set) => ({
+      ...DEFAULT_SETTINGS,
+      set: (patch) => set(patch),
+      reset: () => set({ ...DEFAULT_SETTINGS }),
+    }),
+    {
+      name: 'kotodama-settings',
+      version: 1,
+      migrate: (state) => state as SettingsStore,
+      partialize: (s) => {
+        const { set: _set, reset: _reset, ...rest } = s;
+        return rest;
+      },
+    },
+  ),
+);

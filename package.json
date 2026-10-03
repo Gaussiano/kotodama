@@ -1,0 +1,44 @@
+{
+  "name": "kotodama",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Kotodama 言霊 — survival-Japanese learning PWA (Spanish UI)",
+  "scripts": {
+    "dev": "vite",
+    "prebuild": "node scripts/fonts.mjs",
+    "build": "tsc --noEmit -p tsconfig.json && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "fonts": "node scripts/fonts.mjs",
+    "icons": "node scripts/icons.mjs"
+  },
+  "dependencies": {
+    "@fontsource/nunito": "^5.3.0",
+    "motion": "^14.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^7.18.4",
+    "wanakana": "^5.3.1",
+    "zustand": "^5.0.15"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.3",
+    "@types/node": "^22.20.5",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
+    "@types/wanakana": "^5.3.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "autoprefixer": "^10.4.21",
+    "jsdom": "^26.1.0",
+    "postcss": "^8.5.6",
+    "sharp": "^0.34.3",
+    "tailwindcss": "^3.4.19",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.6",
+    "vite-plugin-pwa": "^1.3.0",
+    "vitest": "^4.1.11"
+  }
+}
